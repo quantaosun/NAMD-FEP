@@ -112,6 +112,6 @@ cat output6 >> output5
 mv output5 md_forward_modi.namd
 grep X ../ionized_solvent.fep # validate the fep file is is good.
 echo "If you don't see the X labeled atoms, please go back to check your input"
-grep X ../../complex/ionized_complex.fep > X1.txt # validate the fep file is is good.
+grep X ../../complex/ionized_complex.fep  # validate the fep file is is good.
 cat X1.txt
 echo "If you don't see the X labeled atoms, please go back to check your input"
