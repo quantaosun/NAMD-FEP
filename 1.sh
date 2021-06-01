@@ -91,27 +91,26 @@ cat output4 >> output3
 mv output3 npt_equil_modi.namd
 # you could manually define the output path to ../complex-output-files
 ###############solvent Production script modification #################################
-tail -n 3 md_forward_2.namd > tmp2.txt
+tail -n 3 md_forward_3.namd > tmp2.txt
 echo "alchEquilSteps          500
       set numSteps            50000" > tmp2.txt 
 cat ../../../lambda.txt >> tmp2.txt  
-cat tmp2.txt >> md_forward_2.namd
-#To uncomment lines 137 through 141 to close the one by one simulation.
-sed -i '137,141 s/^/#/' md_forward_2.namd        
+cat tmp2.txt >> md_forward_3.namd
+#To uncomment lines 136 through 140 to close the one by one simulation.
+sed -i '136,140 s/^/#/' md_forward_2.namd        
 head -n 123 md_forward_2.namd > outputA
 tail -n +124 md_forward_2.namd > outputB
 echo "source     ../../fep.tcl" >> outputA
 cat outputB >> outputA
 mv outputA md_forward_modi.namd
 #################### To modify the alchFile section #########################                                                
-head -n 13 md_forward_2.namd > output5
-cat parameter_patch.txt >> output5
+head -n 13 md_forward_modi.namd > output5
+cat ../../../parameter_patch.txt >> output5
 tail -n +14 md_forward_2.namd > output6       
 sed -i '/^alchDecouple/s/off/yes/' output6    
 cat output6 >> output5
 mv output5 md_forward_modi.namd
-grep X ../ionized_solvent.fep > X.txt # validate the fep file is is good.
-cat X.txt
+grep X ../ionized_solvent.fep # validate the fep file is is good.
 echo "If you don't see the X labeled atoms, please go back to check your input"
 grep X ../../complex/ionized_complex.fep > X1.txt # validate the fep file is is good.
 cat X1.txt
