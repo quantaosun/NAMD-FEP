@@ -38,6 +38,7 @@ head -n 13 npt_equil.namd > output3
 cat ../../../parameter_patch2.txt >> output3
 tail -n +14 npt_equil.namd > output4
 cat output4 >> output3
+#mannuall change the numSteps from 500000 to 50000.
 mv output3 npt_equil_modi.namd
 # you could manually define the output path to ../complex-output-files
 ###############complex Production script modification #################################
