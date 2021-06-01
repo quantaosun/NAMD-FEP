@@ -90,10 +90,10 @@ cat output4 >> output3
 #manually change the numSteps from 500000 to 50000.
 mv output3 npt_equil_modi.namd
 # you could manually define the output path to ../complex-output-files
-###############complex Production script modification #################################
+###############solvent Production script modification #################################
 tail -n 3 md_forward_2.namd > tmp2.txt
-echo "alchEquilSteps          0
-      set numSteps            500000" > tmp2.txt 
+echo "alchEquilSteps          500
+      set numSteps            50000" > tmp2.txt 
 cat ../../../lambda.txt >> tmp2.txt  
 cat tmp2.txt >> md_forward_2.namd
 #To uncomment lines 139 through 141 to close the one by one simulation.
