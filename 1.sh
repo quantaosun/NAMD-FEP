@@ -96,17 +96,17 @@ echo "alchEquilSteps          500
       set numSteps            50000" > tmp2.txt 
 cat ../../../lambda.txt >> tmp2.txt  
 cat tmp2.txt >> md_forward_2.namd
-#To uncomment lines 139 through 141 to close the one by one simulation.
-sed -i '139,141 s/^/#/' md_forward_1.namd        
-head -n 123 md_forward_1.namd > outputA
-tail -n +124 md_forward_1.namd > outputB
-echo "source     ../fep.tcl" >> outputA
+#To uncomment lines 137 through 141 to close the one by one simulation.
+sed -i '137,141 s/^/#/' md_forward_2.namd        
+head -n 123 md_forward_2.namd > outputA
+tail -n +124 md_forward_2.namd > outputB
+echo "source     ../../fep.tcl" >> outputA
 cat outputB >> outputA
-mv outputA md_forward_1.namd
+mv outputA md_forward_modi.namd
 #################### To modify the alchFile section #########################                                                
-head -n 13 md_forward_1.namd > output5
+head -n 13 md_forward_2.namd > output5
 cat parameter_patch.txt >> output5
-tail -n +14 md_forward_1.namd > output6       
+tail -n +14 md_forward_2.namd > output6       
 sed -i '/^alchDecouple/s/off/yes/' output6    
 cat output6 >> output5
 mv output5 md_forward_modi.namd
