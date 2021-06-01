@@ -29,6 +29,8 @@ head -n 13 nvt_equil.namd > output1
 cat ../../../parameter_patch2.txt >> output1
 tail -n +14 nvt_equil.namd > output2
 cat output2 >> output1
+# change the numSteps from 500000 to 50000
+# change the numMinSteps from 50000 to 5000
 mv output1 nvt_equil_modi.namd
 # you could manually define the output path to ../complex-output-files
 ############complex NPT script modification #####################################
