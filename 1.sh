@@ -5,10 +5,10 @@
 #parameter_patch2.txt and toppar_modified should be in the folder as per the structure 
 #below.
 
-                  ##### your folder #####
-                             #                      
-                             #
-                             #
+                                  ##### your folder to run the calculation should look like this #####
+                                                                #                      
+                                                                #
+                                                                #
     ###################################################################################################################################
     #                  #              #                  #             #                   #              #             #             #
     #                  #              #                  #             #                   #              #             #             #
