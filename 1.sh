@@ -9,10 +9,10 @@
                              #                      
                              #
                              #
-    ######################################################
-    #                  #              #                  #
-    #                  #              #                  #
-#files.zip  toppar_modified.zip  parameter_patch2.txt  1.sh
+    ###################################################################################################################################
+    #                  #              #                  #             #                   #              #             #             #
+    #                  #              #                  #             #                   #              #             #             #
+#files.zip  toppar_modified.zip  parameter_patch2.txt  1.sh         lambda.txt          README.md       LICENSE       2.1.pbs        2.2.sh
      
 unzip files.zip
 cd files # in case the folder name is random, this cd to the first one.
