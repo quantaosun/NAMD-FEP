@@ -9,3 +9,7 @@ run the "./1.sh" command to modify the conf files.
 run the "2.1.pbs" command in a cluster 
 or 
 run the "2.2.sh" in a local or AI studio (colab) platform
+
+An example result can be accessed here 链接：https://pan.baidu.com/s/1Wg-550aJiVNdRLbHFaWM7w 
+提取码：hyq9 
+复制这段内容后打开百度网盘手机App，操作更方便哦--来自百度网盘超级会员V5的分享
