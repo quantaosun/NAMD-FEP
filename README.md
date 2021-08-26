@@ -1,4 +1,4 @@
-# fep_prepare
+# NAMD-fep
 
 Download the step by step world tutorial for more details.
 
