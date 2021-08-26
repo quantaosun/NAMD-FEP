@@ -1,5 +1,10 @@
 # fep_prepare
-This is for myself for the purpose of NAMD fep simulation input preparation, after the web server call "Feprepare"
+
+Download the step by step world tutorial for more details.
+
+----------------You could ignore the below-------------------------------------
+
+This is for the purpose of NAMD fep simulation input preparation, after the web server call "Feprepare"
 
 Download this repository, then go to Feprepare to generate your files.zip and put it inside the fep_prepare folder.
 
