@@ -1,4 +1,4 @@
-1module load intel/18.0.1.163 openmpi/3.1.2-intel namd/2.13-mpi
+module load intel/18.0.1.163 openmpi/3.1.2-intel namd/2.13-mpi
 
 export Honey_NAMD=/apps/namd/2.13-mpi/arch/Linux-x86_64-icc   # this need to be modified
 
