@@ -1,0 +1,145 @@
+###################################################
+# MD BACKWARD
+###################################################
+
+
+# INPUT
+
+set temp                310.0
+
+vdwGeometricSigma	yes
+parameters              ../../par_opls_aam.inp
+parameters              ../../updated.prm
+parameters              ../../reference.prm
+
+
+paraTypeCharmm          on
+
+exclude                 scaled1-4
+1-4scaling              1.0
+
+
+# TOPOLOGY
+
+structure               ../ionized.psf
+
+# INITIAL CONDITIONS
+
+coordinates             ../ionized_complex.pdb
+bincoordinates          md_forward_2.coor
+binvelocities           md_forward_2.vel
+extendedsystem          md_forward_2.xsc
+
+# OUTPUT FREQUENCIES
+
+outputenergies          25000
+outputtiming            25000
+outputpressure          25000
+restartfreq             25000
+XSTFreq                 25000
+dcdfreq                 25000
+
+
+# OUTPUT AND RESTART
+
+outputname              md_backward_2
+restartname             md_backward_2
+
+binaryoutput            yes
+binaryrestart           yes
+
+# CONSTANT-T
+langevin                on
+langevinTemp            $temp
+langevinDamping         1.0
+
+# PME
+
+PME                     yes
+PMETolerance            10e-6
+PMEInterpOrder          4
+
+PMEGridSpacing          1.0
+
+# Periodic Boundary Conditions
+# cellBasisVector1    30.0    0   0
+# cellBasisVector2     0    30.0   0
+# cellBasisVector3     0    0    30.0
+# cellOrigin          0.0 0.0 0.0
+
+
+# WRAP WATER FOR OUTPUT
+
+wrapAll                 on
+wrapWater               on
+
+# CONSTANT-P
+
+LangevinPiston          on
+LangevinPistonTarget    1.01325
+LangevinPistonPeriod    100
+LangevinPistonDecay     50
+LangevinPistonTemp      $temp
+
+StrainRate              0.0 0.0 0.0
+useGroupPressure        yes
+
+useFlexibleCell         no
+
+# SPACE PARTITIONING
+
+stepspercycle           10
+margin                  1.0
+
+# CUT-OFFS
+
+switching               on
+switchdist              10.0
+cutoff                  12.0
+pairlistdist            14.0
+
+
+# RESPA PROPAGATOR
+
+timestep                2.0
+fullElectFrequency      2
+nonbondedFreq           1
+
+
+# SHAKE
+
+rigidbonds              all
+rigidtolerance          0.000001
+rigiditerations         400
+
+
+# COM
+
+ComMotion            no
+
+
+# FEP PARAMETERS
+
+# source                 ../../fep.tcl
+source     ../fep.tcl
+
+alch                    on
+alchType                fep
+alchFile                ../ionized_complex.fep
+alchCol                 B
+alchOutFile             md_backward_2.fepout
+alchOutFreq             100
+
+alchVdwLambdaEnd        1.0
+alchElecLambdaStart     0.5
+alchVdWShiftCoeff       5.0
+alchDecouple            off
+
+#alchEquilSteps          500000
+
+#alchLambda		0.9375
+#alchLambda2		0.875
+#run		        5000000        ; # 5 ns
+alchEquilSteps          0
+set numSteps            500000       ; # 0.5 ns as a total
+runFEP 1.0 0.0 -0.0625 $numSteps
