@@ -4,8 +4,7 @@
 
 # Usage
 
-It is assumed you already compiled namd on your labtop (Or just use a binary version, i.e., a pre-cmopiled version) from https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=NAMD, for me, I chose Linux-x86_64-multicore version
-
+It is assumed you already compiled namd on your labtop (Or just use a binary version, i.e., a pre-cmopiled version) from https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=NAMD
 ```
 git clone https://github.com/quantaosun/NAMD-FEP
 ```
