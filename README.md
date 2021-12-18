@@ -38,12 +38,13 @@ It is assumed you have installed jupyter notebook
 jupyter notebook NAMD-FEP_local.ipynb
 ```
 In a test run, examples of analysis would be like :
-Analysis and result of solvent leg, (for the first image above)
-![Screenshot from 2021-12-18 15-27-46](https://user-images.githubusercontent.com/75652473/146633327-6e5e4e86-d76f-4758-aff3-78c31e51532d.png)
 
 Analysis and result of complex leg, (for the second image above)
+![Screenshot from 2021-12-18 15-27-46](https://user-images.githubusercontent.com/75652473/146633327-6e5e4e86-d76f-4758-aff3-78c31e51532d.png)
+
+Analysis and result of solvent leg, (for the first image above)
 ![Screenshot from 2021-12-18 15-28-06](https://user-images.githubusercontent.com/75652473/146633332-b4f62f43-5a55-493d-a0ee-0bf797862681.png)
 
-Based on above two images, the delt delt G would be ΔΔG FEP = ΔG complex- ΔG solvent = -7.1 kcal/mol (This is just a test due to very short simulation time)
+# Based on above two images, the delt delt G would be ΔΔG FEP = ΔG complex- ΔG solvent = -7.1 kcal/mol (This is just a test due to very short simulation time)
 
 If you have access to google colab, or any other open souced cloud platforms, with a NAMD installed, it is then possible for you to run the whole FEP process there instead of your loptop, with usually a faster performance in simulation speed.
