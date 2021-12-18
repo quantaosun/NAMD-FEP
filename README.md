@@ -9,6 +9,9 @@ If you have access to google colab, or any other open souced cloud platforms, wi
 
 The most important file of this tutorial is the jupyter notebook, inside there are 8 configuration files, 4 for complex leg, 4 for solvent leg, to finish all the testing simulation. For HPC or cloud NAMD simulation, use the 3 configuration files listed above instead. (you can generate 4th one for HPC/Cloud by yourself)
 
+We didn't discuss in depth about the FEP theory, basicly, it involves one protein target, with a hybridized ligand (merged from a pair of similar ligands of interests), then we calculate the energy difference when gradually turning off interaction of first ligand while turning on the interaction of the second. The reason why we do it slowly is a request of sampling strategy, you don't have to understand 100% before you could do it, just like you don't have to understand 100% of the mechansim of a chemical reaction before you could actually finish the reaction. But it is always good if you can.
+
+The next image is an image of PDB 1MQ5 with a hybridized ligand, it will server as the input as the FEP calculation. The ligand topologes are generated from ligpargen web server http://zarbi.chem.yyale.edu/ligpargen/, and the hybridization of the ligands and the overall input generation of this protein-ligand complex is done with help of Feprepare web server https://feprepare.vi-seem.eu/.
 
 ![image](https://user-images.githubusercontent.com/75652473/146633202-94569a82-c2cf-457a-95c0-754dfee4d7ae.png)
 
