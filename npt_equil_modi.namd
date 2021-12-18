@@ -85,12 +85,12 @@ extendedsystem          nvt_equil.xsc
 
 # OUTPUT FREQUENCIES
 
-outputenergies          25000
-outputtiming            25000
-outputpressure          25000
-restartfreq             25000
-XSTFreq                 25000
-dcdfreq                 25000
+outputenergies          2500
+outputtiming            2500
+outputpressure          2500
+restartfreq             2500
+XSTFreq                 2500
+dcdfreq                 2500
 
 
 # OUTPUT AND RESTART
