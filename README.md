@@ -7,7 +7,7 @@ The primary goal of this repository is to calculate the difference of binding fr
 ![9999999999999999999999999999999](https://user-images.githubusercontent.com/75652473/146633817-a19cd8fc-3355-44c1-a50d-98c1e22caaaf.png)
 
 
-This is a detailed workflow, based on NAMD tutorial "A Tutorial on Alchemical Free Energy Perturbation Calculations in NAMD:" from http://www.ks.uiuc.edu/Training/Tutorials/; and the paper describing Feprepare web server https://pubs.acs.org/doi/abs/10.1021/acs.jcim.1c00215;
+This is a detailed workflow, based on NAMD tutorial "A Tutorial on Alchemical Free Energy Perturbation Calculations in NAMD:" from http://www.ks.uiuc.edu/Training/Tutorials/; and the paper describing Feprepare web server  J. Chem. Inf. Model. 2021, 61, 9, 4131–4138 (https://pubs.acs.org/doi/10.1021/acs.jcim.1c00215);
 Feprepare web server https://feprepare.vi-seem.eu/
 
 
