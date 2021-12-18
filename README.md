@@ -1,20 +1,19 @@
 # NAMD-FEP
 
+The most important file of this tutorial is the jupyter notebook, inside there are 8 configuration files, 4 for complex leg, 4 for solvent leg, to finish all the testing simulation.
+
 The primary goal of this repository is to calculate the difference of binding free energy of a pair of small molecules against the same protein target, i.e., the delt delt G of binding, which is of significant importance in hit-to-lead drug discovery.
 
- Pros and Cons, It is more accurate than docking, but it cost more time, and could only handle ligands with similar scaffold that can be aligned.
-
-![9999999999999999999999999999999](https://user-images.githubusercontent.com/75652473/146633817-a19cd8fc-3355-44c1-a50d-98c1e22caaaf.png)
+ Pros and Cons, FEP is more accurate than docking, but it cost more time, and could only handle ligands with similar scaffold that can be aligned.
 
 
 This is a detailed workflow, based on NAMD tutorial "A Tutorial on Alchemical Free Energy Perturbation Calculations in NAMD:" from http://www.ks.uiuc.edu/Training/Tutorials/; and the paper describing Feprepare web server  J. Chem. Inf. Model. 2021, 61, 9, 4131–4138 (https://pubs.acs.org/doi/10.1021/acs.jcim.1c00215);
 Feprepare web server https://feprepare.vi-seem.eu/
 
 
-The most important file of this tutorial is the jupyter notebook, inside there are 8 configuration files, 4 for complex leg, 4 for solvent leg, to finish all the testing simulation. For HPC or cloud NAMD simulation, use the 3 configuration files listed above instead. (you can generate 4th one, i.e., backward one, for HPC/Cloud by yourself)
+Free energy pertubation,basicly, it involves one protein target, with a hybridized ligand (merged from a pair of similar ligands of interests), then we calculate the energy difference when gradually turning off interaction of first ligand while turning on the interaction of the second. The reason why we do it slowly is a request of sampling strategy, you don't have to understand 100% before you could do it, just like you don't have to understand 100% of the mechansim of a chemical reaction before you could actually finish the reaction. But it is always good if you can. 
 
-We didn't discuss in depth about the FEP theory, basicly, it involves one protein target, with a hybridized ligand (merged from a pair of similar ligands of interests), then we calculate the energy difference when gradually turning off interaction of first ligand while turning on the interaction of the second. The reason why we do it slowly is a request of sampling strategy, you don't have to understand 100% before you could do it, just like you don't have to understand 100% of the mechansim of a chemical reaction before you could actually finish the reaction. But it is always good if you can. 
-
+![9999999999999999999999999999999](https://user-images.githubusercontent.com/75652473/146633817-a19cd8fc-3355-44c1-a50d-98c1e22caaaf.png)
 The first image above is a hybrized ligand in water system, while the next is hybridized ligand and protein in water, so what we do is we separately simulate these to systems, the ddG then will be processed with ddG = dG complex (second image) - dG solvent (first image). For a better explanation, refer to http://www.alchemistry.org/wiki/Example:_Relative_Binding_Affinity (The link do not talk about NAMD, but the fundamental theory are all the same)
 
 The next image is an image of PDB 1MQ5 with a hybridized ligand, it will serve as the input as the FEP calculation. The ligand topologies are generated from ligpargen web server http://zarbi.chem.yyale.edu/ligpargen/, and the hybridization of the ligands and the overall input generation of this protein-ligand complex is done with help of Feprepare web server https://feprepare.vi-seem.eu/.
