@@ -5,6 +5,8 @@ Feprepare web server https://feprepare.vi-seem.eu/
 
 If you have access to google colab, or any other open souced cloud platforms, with a NAMD installed, it is then possible for you to run the whole FEP process there instead of your loptop, with usually a faster performance in simulation speed.
 
+The most important file of this tutorial is the jupyter notebook, inside there are 8 configuration files, 4 for complex leg, 4 for solvent leg, to finish all the testing simulation. For HPC or cloud NAMD simulation, use the 3 configuration files listed above instead. (you can generate 4th one for HPC/Cloud by yourself)
+
 # Just follow the step by step tutorial inside the jupyter notebook
 
 # Usage
