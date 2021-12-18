@@ -1,8 +1,8 @@
-# NAMD-fep
+# NAMD-FEP
 
-# The primary goal of this repository is to calculate the difference of binding free energy of a pair of small molecules against the same protein target, i.e., the delt delt G of binding, which is of significant importance in hit-to-lead drug discovery.
+The primary goal of this repository is to calculate the difference of binding free energy of a pair of small molecules against the same protein target, i.e., the delt delt G of binding, which is of significant importance in hit-to-lead drug discovery.
 
-# Pros and Cons, It is more accurate than docking, but it cost more time, and could only handle ligands with similar scaffold that can be aligned.
+ Pros and Cons, It is more accurate than docking, but it cost more time, and could only handle ligands with similar scaffold that can be aligned.
 
 ![9999999999999999999999999999999](https://user-images.githubusercontent.com/75652473/146633817-a19cd8fc-3355-44c1-a50d-98c1e22caaaf.png)
 
