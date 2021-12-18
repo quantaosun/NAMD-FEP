@@ -9,7 +9,7 @@ Free energy pertubation,basicly, it involves one protein target, with a hybridiz
 ![9999999999999999999999999999999](https://user-images.githubusercontent.com/75652473/146633817-a19cd8fc-3355-44c1-a50d-98c1e22caaaf.png)
 The first image above is a hybrized ligand in water system, while the next is hybridized ligand and protein in water, so what we do is we separately simulate these to systems, the ddG then will be processed with ddG = dG complex (second image) - dG solvent (first image). For a better explanation, refer to http://www.alchemistry.org/wiki/Example:_Relative_Binding_Affinity (The link do not talk about NAMD, but the fundamental theory are all the same)
 
-The next image is an image of PDB 1MQ5 with a hybridized ligand, it will serve as the input as the FEP calculation. The ligand topologies are generated from ligpargen web server http://zarbi.chem.yyale.edu/ligpargen/, and the hybridization of the ligands and the overall input generation of this protein-ligand complex is done with help of Feprepare web server https://feprepare.vi-seem.eu/.
+The next image is an image of PDB 1MQ5 with a hybridized ligand, it will serve as one of the two inputs in the whole FEP calculation. The ligand topologies are generated from ligpargen web server http://zarbi.chem.yyale.edu/ligpargen/, and the hybridization of the ligands and the overall input generation of this protein-ligand complex is done with help of Feprepare web server https://feprepare.vi-seem.eu/.
 
 ![image](https://user-images.githubusercontent.com/75652473/146633202-94569a82-c2cf-457a-95c0-754dfee4d7ae.png)
 
