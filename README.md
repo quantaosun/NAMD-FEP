@@ -6,7 +6,7 @@ This is a detailed workflow, based on NAMD tutorial "A Tutorial on Alchemical Fr
 Feprepare web server https://feprepare.vi-seem.eu/
 
 
-The most important file of this tutorial is the jupyter notebook, inside there are 8 configuration files, 4 for complex leg, 4 for solvent leg, to finish all the testing simulation. For HPC or cloud NAMD simulation, use the 3 configuration files listed above instead. (you can generate 4th one for HPC/Cloud by yourself)
+The most important file of this tutorial is the jupyter notebook, inside there are 8 configuration files, 4 for complex leg, 4 for solvent leg, to finish all the testing simulation. For HPC or cloud NAMD simulation, use the 3 configuration files listed above instead. (you can generate 4th one, i.e., backward one, for HPC/Cloud by yourself)
 
 We didn't discuss in depth about the FEP theory, basicly, it involves one protein target, with a hybridized ligand (merged from a pair of similar ligands of interests), then we calculate the energy difference when gradually turning off interaction of first ligand while turning on the interaction of the second. The reason why we do it slowly is a request of sampling strategy, you don't have to understand 100% before you could do it, just like you don't have to understand 100% of the mechansim of a chemical reaction before you could actually finish the reaction. But it is always good if you can.
 
