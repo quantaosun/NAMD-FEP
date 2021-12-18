@@ -52,3 +52,4 @@ parameters              ../../toppar/toppar_water_ions.mod.str
 #parameters               top_opls_aam.inp
 #parameters               toppar_all36_carb_glycopeptide.str
 parameters               ../updated.prm
+
