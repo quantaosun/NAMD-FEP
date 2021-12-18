@@ -21,3 +21,4 @@ It is assumed you have installed jupyter notebook
 ```
 jupyter notebook NAMD-FEP_local.ipynb
 ```
+The jupyter notebook will guide you through a very short FEP calculation and analysis, for a practical use, please change the simulation steps to much larger number that, and submit the job to a HPC cluster or clould platforms. A fair fep simulation would cost a day or two days, depending the size of your protein, and mostly on how good is the computing resources you could get access to.
