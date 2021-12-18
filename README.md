@@ -1,6 +1,7 @@
 # NAMD-fep
 
-This is a detailed workflow, based on NAMD tutorial "A Tutorial on Alchemical Free Energy Perturbation Calculations in NAMD:" from http://www.ks.uiuc.edu/Training/Tutorials/; and the paper describing Feprepare web server https://pubs.acs.org/doi/abs/10.1021/acs.jcim.1c00215 
+This is a detailed workflow, based on NAMD tutorial "A Tutorial on Alchemical Free Energy Perturbation Calculations in NAMD:" from http://www.ks.uiuc.edu/Training/Tutorials/; and the paper describing Feprepare web server https://pubs.acs.org/doi/abs/10.1021/acs.jcim.1c00215;
+Feprepare web server https://feprepare.vi-seem.eu/
 
 If you have access to google colab, or any other open souced cloud platforms, with a NAMD installed, it is then possible for you to run the whole FEP process there instead of your loptop, with usually a faster performance in simulation speed.
 
