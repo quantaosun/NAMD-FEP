@@ -86,12 +86,12 @@ extendedsystem          npt_equil.xsc
 
 # OUTPUT FREQUENCIES
 
-outputenergies          250000
-outputtiming            250000
-outputpressure          250000
-restartfreq             250000
-XSTFreq                 250000
-dcdfreq                 250000
+outputenergies          2500
+outputtiming            2500
+outputpressure          2500
+restartfreq             2500
+XSTFreq                 2500
+dcdfreq                 2500
 
 
 # OUTPUT AND RESTART
