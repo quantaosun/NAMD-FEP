@@ -11,5 +11,4 @@ mpirun --oversubscribe -np 4 namd2 +ppn 7 npt_equil_modi.namd > npt_equil_modi.o
 
 # Production#######################################################
 
-mpirun --oversubscribe -np 4 namd2 +ppn 7 md_forward_modi.namd > md_forward_modi.out &&
-  
+mpirun --oversubscribe -np 4 namd2 +ppn 7 md_forward_modi.namd > md_forward_modi.out
