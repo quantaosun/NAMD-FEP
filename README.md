@@ -2,7 +2,9 @@
 
 The primary goal of this repository is to calculate the difference of binding free energy of a pair of small molecules against the same protein target, i.e., the ∆∆G of binding, which is of significant importance in hit-to-lead drug discovery.
 
-This is a detailed workflow, based on NAMD tutorial "A Tutorial on Alchemical Free Energy Perturbation Calculations in NAMD:" from http://www.ks.uiuc.edu/Training/Tutorials/; and the paper describing Feprepare web server  J. Chem. Inf. Model. 2021, 61, 9, 4131–4138 (https://pubs.acs.org/doi/10.1021/acs.jcim.1c00215);
+There are many vague tutorials with either organic compound only system, or too much theoretical discussion, but without a clear one of actually showing people how to actually do an FEP with regard to protein-ligand complex, so I decide to make one, what you need to do is download the "ipynb" format file, and launch that file with your Jupyter Notebook, so you can run an actual FEP workflow, with stability repeatability.
+
+The work here is, based on NAMD tutorial "A Tutorial on Alchemical Free Energy Perturbation Calculations in NAMD:" from http://www.ks.uiuc.edu/Training/Tutorials/; and the paper describing Feprepare web server  J. Chem. Inf. Model. 2021, 61, 9, 4131–4138 (https://pubs.acs.org/doi/10.1021/acs.jcim.1c00215);
 Feprepare webserver https://feprepare.vi-seem.eu/
 
 Free energy perturbation, basically, involves one protein target, with a hybridized ligand (merged from a pair of similar ligands of interests), then we calculate the energy difference when gradually turning off the interaction of the first ligand while turning on the interaction of the second. The reason why we do it slowly is a request of sampling strategy, you don't have to understand 100% before you could do it, just like you don't have to understand 100% of the mechanism of a chemical reaction before you could actually finish the reaction. But it is always good if you can.
