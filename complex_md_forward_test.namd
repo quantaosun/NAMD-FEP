@@ -1,0 +1,202 @@
+
+###################################################
+# MD FORWARD
+###################################################
+
+
+# INPUT
+
+set temp                310.0
+
+vdwGeometricSigma	yes
+parameters              ../par_opls_aam.inp
+parameters              ../updated.prm
+parameters              ../reference.prm
+
+parameters              ../../toppar/par_all36m_prot.prm
+parameters              ../../toppar/par_all36_na.prm
+parameters              ../../toppar/par_all36_carb.prm
+parameters              ../../toppar/par_all36_lipid.prm
+parameters              ../../toppar/par_all36_cgenff.prm
+#parameters              ../../toppar/par_interface.prm
+parameters              ../../toppar/toppar_all36_nano_lig.str
+parameters              ../../toppar/toppar_all36_nanolig_patch.str
+parameters              ../../toppar/toppar_all36_synthetic_polymer.str
+parameters              ../../toppar/toppar_all36_synthetic_polymer_patch.str
+parameters              ../../toppar/toppar_all36_polymer_solvent.str
+#parameters              ../../toppar/toppar_water_ions.str
+#parameters              ../../toppar/toppar_dum_noble_gases.str
+#parameters              ../../toppar/toppar_ions_won.str
+parameters              ../../toppar/toppar_all36_prot_arg0.str
+#parameters              ../../toppar/toppar_all36_prot_c36m_d_aminoacids.str
+parameters              ../../toppar/toppar_all36_prot_fluoro_alkanes.str
+parameters              ../../toppar/toppar_all36_prot_heme.str
+parameters              ../../toppar/toppar_all36_prot_na_combined.str
+parameters              ../../toppar/toppar_all36_prot_retinol.str
+parameters              ../../toppar/toppar_all36_prot_modify_res.str
+parameters              ../../toppar/toppar_all36_na_nad_ppi.str
+parameters              ../../toppar/toppar_all36_na_rna_modified.str
+parameters              ../../toppar/toppar_all36_lipid_archaeal.str
+#parameters              ../../toppar/toppar_all36_lipid_bacterial.str
+parameters              ../../toppar/toppar_all36_lipid_cardiolipin.str
+#parameters              ../../toppar/toppar_all36_lipid_cholesterol.str
+parameters              ../../toppar/toppar_all36_lipid_dag.str
+parameters              ../../toppar/toppar_all36_lipid_inositol.str
+parameters              ../../toppar/toppar_all36_lipid_lps.str
+parameters              ../../toppar/toppar_all36_lipid_miscellaneous.str
+parameters              ../../toppar/toppar_all36_lipid_model.str
+parameters              ../../toppar/toppar_all36_lipid_prot.str
+#parameters              ../../toppar/toppar_all36_lipid_sphingo.str
+#parameters              ../../toppar/toppar_all36_lipid_yeast.str
+parameters              ../../toppar/toppar_all36_lipid_hmmm.str
+parameters              ../../toppar/toppar_all36_lipid_detergent.str
+parameters              ../../toppar/toppar_all36_lipid_ether.str
+parameters              ../../toppar/toppar_all36_carb_glycolipid.str
+#parameters              ../../toppar/toppar_all36_carb_glycopeptide.str
+parameters              ../../toppar/toppar_all36_carb_imlab.str
+#parameters              ../../toppar/toppar_all36_label_spin.str
+#parameters              ../../toppar/toppar_all36_label_fluorophore.str
+parameters              ../../toppar/toppar_water_ions.mod.str
+#parameters              ../../toppar/toppar_water_ions.str
+#parameters               top_all36_carb.rtf
+#parameters                top_all36_cgenff.rtf
+#parameters                top_all36_na.rtf
+#parameters               top_all36_prot.rtf
+#parameters               top-ign-cgenff.rtf
+#parameters               top_opls_aam.inp
+#parameters               toppar_all36_carb_glycopeptide.str
+parameters               ../updated.prm
+
+
+paraTypeCharmm          on
+
+exclude                 scaled1-4
+1-4scaling              1.0
+
+
+# TOPOLOGY
+
+structure               ionized.psf
+
+# INITIAL CONDITIONS
+
+coordinates             ionized_complex.pdb
+bincoordinates          npt_equil.coor
+binvelocities           npt_equil.vel
+extendedsystem          npt_equil.xsc
+
+# OUTPUT FREQUENCIES
+
+outputenergies          10
+outputtiming            10
+outputpressure          10
+restartfreq             10
+XSTFreq                 10
+dcdfreq                 10
+
+
+# OUTPUT AND RESTART
+
+outputname              md_forward_modi
+restartname             md_forward_modi
+
+binaryoutput            yes
+binaryrestart           yes
+
+# CONSTANT-T
+langevin                on
+langevinTemp            $temp
+langevinDamping         1.0
+
+# PME
+
+PME                     yes
+PMETolerance            10e-6
+PMEInterpOrder          4
+
+PMEGridSpacing          1.0
+
+# Periodic Boundary Conditions
+# cellBasisVector1    30.0    0   0
+# cellBasisVector2     0    30.0   0
+# cellBasisVector3     0    0    30.0
+# cellOrigin          0.0 0.0 0.0
+
+
+# WRAP WATER FOR OUTPUT
+
+wrapAll                 on
+wrapWater               on
+
+# CONSTANT-P
+
+LangevinPiston          on
+LangevinPistonTarget    1.01325
+LangevinPistonPeriod    100
+LangevinPistonDecay     50
+LangevinPistonTemp      $temp
+
+StrainRate              0.0 0.0 0.0
+useGroupPressure        yes
+
+useFlexibleCell         no
+
+# SPACE PARTITIONING
+
+stepspercycle           10
+margin                  1.0
+
+# CUT-OFFS
+
+switching               on
+switchdist              10.0
+cutoff                  12.0
+pairlistdist            14.0
+
+
+# RESPA PROPAGATOR
+
+timestep                2.0
+fullElectFrequency      2
+nonbondedFreq           1
+
+
+# SHAKE
+
+rigidbonds              all
+rigidtolerance          0.000001
+rigiditerations         400
+
+
+# COM
+
+ComMotion            no
+
+
+# FEP PARAMETERS
+
+# source                 ../../fep.tcl
+source     ../fep.tcl
+
+alch                    on
+alchType                fep
+alchFile                ionized_complex.fep
+alchCol                 B
+alchOutFile             md_forward_modi.fepout
+alchOutFreq             10
+
+alchVdwLambdaEnd        1.0
+alchElecLambdaStart     0.5
+alchVdWShiftCoeff       5.0
+alchDecouple            yes
+
+#alchEquilSteps          500000
+
+#alchLambda		0.0
+#alchLambda2		0.0625
+#run		        5000000        ; # 5 ns
+alchEquilSteps          50
+set numSteps            500      ; # 0.5 ns as a total
+
+runFEP 0.0 1.0 0.0625 $numSteps 
+
