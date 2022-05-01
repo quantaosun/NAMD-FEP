@@ -1,5 +1,7 @@
 # NAMD-FEP
 
+# If you are familar with NAMD and have good HPC resources, please consider using Charmm GUI RBF workflow instead of this one.
+
 The primary goal of this repository is to calculate the difference of binding free energy of a pair of small molecules against the same protein target, i.e., the ∆∆G of binding, which is of significant importance in hit-to-lead drug discovery.
 
 There are many vague tutorials with either organic compound only system, or too much theoretical discussion, but without a clear one of actually showing people how to actually do an FEP with regard to protein-ligand complex, so I decide to make one, what you need to do is download the "ipynb" format file, and launch that file with your Jupyter Notebook, so you can run an actual FEP workflow, with stability and repeatability.
