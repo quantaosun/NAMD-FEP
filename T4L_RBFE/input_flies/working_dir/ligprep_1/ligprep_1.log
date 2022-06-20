@@ -1,0 +1,40 @@
+--------------------------------------------------------------------------------
+JobId          : fangzhennan-0-62a6a7d5
+Name           : ligprep_1
+Program        : LigPrep
+Host           : fangzhennan.hhtpharm.com
+Dir            : C:\Users\fangzhennan\Desktop\T4L_RBFE\input_files\maestro\working_dir\ligprep_1
+HostEntry      : localhost
+JobHost        : fangzhennan.hhtpharm.com
+JobDir         : C:\Users\fangzhennan\AppData\Local\Schrodinger\tmp\ligprep_1
+JobSchrodinger : D:\Program Files (x86)\Schrodinger2020-4
+Commandline    : D:\Program Files (x86)\Schrodinger2020-4\ligprep.exe -inp ligprep_1.inp -HOST localhost:1 -NJOBS 1 -PROJ C:\Users\fangzhennan\Desktop\T4L_RBFE\input_files\maestro\working_dir\T4L_RBFE.prj -DISP append -VIEWNAME ligprep_gui.LigPrepPanel -TMPLAUNCHDIR
+StartTime      : 2022-06-13-10:58:29
+--------------------------------------------------------------------------------
+LigPrep (version 56149). Copyright Schrodinger, LLC. All rights reserved.
+
+LigPrep command:
+$SCHRODINGER/ligprep -bff 16 -epik -s 32 -imae ligprep_1.maegz -omae ligprep_1-out.maegz
+
+Processing steps:
+$DO.sdstereoexpander -add_hydrogens -max_output 32 -max_generated 1024 <infile.mae> <outfile.mae>
+$DO.htreat -t All-None -a all -s -l 200 <infile.mae> <outfile.mae>
+$DO.desalter <infile.mae> <outfile.mae>
+$DO.neutralizer -m 200 <infile.mae> <outfile.mae>
+$DO.epik.py -ph 7.0 -tn 8 -ma 200 -imae <infile.mae> -omae <outfile.mae>
+$DO.guard <infile.mae> <outfile.mae>
+$DO.stereoizer -label_specified_chiralities -n 32 <infile.mae> <outfile.mae>
+$DO.cgx -optimize -ffld 16 -epsilon 10.0 <infile.mae> <outfile.mae>
+$DO.filterstereo -max_stereo 32 <infile.mae> <outfile.mae>
+
+DO=$SCHRODINGER\run python3 -m schrodinger.application.macromodel.packages.ligprep3
+
+# counts of output and dropped structures after processing steps
+# index  sdstex  htreat  desalt  neutra   epik    guard  stereo    cgx   filter  title
+       1   1/0     1/0     1/0     1/0     1/0     1/0     1/0     1/0     1/0   'ligand0'
+       2   1/0     1/0     1/0     1/0     1/0     1/0     1/0     1/0     1/0   'ligand1'
+
+# of processed structures in "ligprep_1-out.maegz" : 2
+# of dropped structures in "ligprep_1-dropped.maegz" : 0
+
+backend run time: 0 hours 0 minutes 4.906 seconds

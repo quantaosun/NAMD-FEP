@@ -1,0 +1,167 @@
+{ 
+ s_m_m2io_version
+ :::
+ 2.0.0 
+} 
+
+f_m_ct { 
+ s_m_title
+ s_m_entry_id
+ s_m_entry_name
+ s_pdb_PDB_TITLE
+ s_pdb_PDB_ID
+ r_pdb_PDB_CRYST1_a
+ r_pdb_PDB_CRYST1_b
+ r_pdb_PDB_CRYST1_c
+ r_pdb_PDB_CRYST1_alpha
+ r_pdb_PDB_CRYST1_beta
+ r_pdb_PDB_CRYST1_gamma
+ s_pdb_PDB_CRYST1_Space_Group
+ i_pdb_PDB_CRYST1_z
+ s_pdb_PDB_CLASSIFICATION
+ s_pdb_PDB_DEPOSITION_DATE
+ s_pdb_PDB_format_version
+ r_pdb_PDB_R
+ r_pdb_PDB_Rfree
+ r_pdb_PDB_RESOLUTION
+ s_pdb_PDB_EXPDTA
+ r_pdb_PDB_EXPDTA_TEMPERATURE
+ r_pdb_PDB_EXPDTA_PH
+ s_pdb_PDB_REMARK_350_Biomolecule_1_Transform_1_Chains
+ s_pdb_PDB_REMARK_350_Biomolecule_1_Transform_1_Matrix_1
+ s_m_Source_Path
+ s_m_Source_File
+ i_m_Source_File_Index
+ s_ppw_entry_id_backup
+ b_ppw_prepared
+ s_ppw_prepared_with_version
+ b_ppw_assigned_bond_orders
+ b_ppw_added_hydrogens
+ b_ppw_treated_metals
+ b_ppw_created_disulfur
+ s_psp_EXECUTE_FUNCTION_Input_Structure_Hash
+ s_ppw_het_states
+ i_m_ct_format
+ :::
+ ligand0 
+  8 
+  4w53.1_ligand 
+  "T4 LYSOZYME L99A WITH TOLUENE BOUND" 
+  4W53 
+  60.34
+  60.34
+  96.97
+  90
+  90
+  120
+  "P 32 2 1" 
+  6
+  HYDROLASE 
+  16-AUG-14 
+  3.30 
+  0.174
+  0.205
+  1.56
+  "X-RAY DIFFRACTION" 
+  100
+  7.5
+  A 
+  "1.000000 0.000000 0.000000   0.000000;0.000000 1.000000 0.000000   0.000000;0.000000 0.000000 1.000000   0.000000" 
+  C:\Users\fangzhennan\Desktop\T4L_RBFE\input_files\maestro\working_dir 
+  4w53.pdb 
+  1
+  1 
+  1
+  2020-4 
+  1
+  1
+  1
+  1
+  495a4b1d6a5fc8bfeaa0ee6b1fc227da0022fce4e0367ee6fbe25ad7 
+  eJztVbFSg0AQ/ZUb6oC3B9weSWdl61g6FpmYSoQUWDiZ/LssC3kJA4kWOhahYF6Wy7577y3HPqJoaZ7bi5zPF8a+LIxAD8iAAbA4QraAJFBw3047EZpqP3dakD8RuJSGwKhkDrxKSWDXHk6IY5u0hf2h3YeA6KlZN1uz21brsvlcdo+tedusy7v3ulyZh/i+rl7Npv6omqWxK/PY3iNpFLmjL+wgMAXMAGEcwziGcQzjGMYFGBcIEGwBbAFsAWzBn/gt29QdDtZogUeFAL+7xZ0SgijVQ5Cmqs4LiIj9mKXLTHQSJKtagloVStCscgnKVfR5IT8OQl/wfe7kEhs8afQxUf9rnL8sK2bzpyF/MfS7wdPvBx/TLfnZ5G3irJwKEjwlXKQTsbdraDZ1N5E6XUv9D173W+oXUy9c5ofULeeZxTU5AYX70QT8hwP/NgGXTvwk8y4dvvV5ynx5AmT9lQmIqf30H74An9r6HQ== 
+  2
+ m_atom[15] { 
+  # First column is atom index #
+  i_m_mmod_type
+  r_m_x_coord
+  r_m_y_coord
+  r_m_z_coord
+  i_m_residue_number
+  s_m_chain_name
+  i_m_color
+  s_m_pdb_residue_name
+  s_m_pdb_atom_name
+  i_m_atomic_number
+  i_m_representation
+  s_m_color_rgb
+  s_m_label_format
+  i_m_label_color
+  s_m_label_user_text
+  r_m_pdb_occupancy
+  r_m_pdb_tfactor
+  i_m_pdb_convert_problem
+  i_pdb_PDB_serial
+  i_ppw_anum
+  i_ppw_het
+  s_ppw_CCD_assignment_status
+  :::
+  1 3 -32.355000 7.263000 2.207000 200 A 10 "MBN " " C  " 6 3 1EE11E  "%UT"  10 ""  0.8 22.81 4 1359 1265 1 "CCD match" 
+  2 2 -33.181000 6.606000 3.301000 200 A 10 "MBN " " C1 " 6 3 1EE11E  "%UT"  10 ""  0.8 17.3 4 1360 1266 1 "CCD match" 
+  3 2 -33.238000 7.160000 4.565000 200 A 10 "MBN " " C2 " 6 3 1EE11E  "%UT"  10 ""  0.8 19.02 4 1361 1267 1 "CCD match" 
+  4 2 -33.992000 6.571000 5.570000 200 A 10 "MBN " " C3 " 6 3 1EE11E  "%UT"  10 ""  0.8 15.62 4 1362 1268 1 "CCD match" 
+  5 2 -34.711000 5.417000 5.332000 200 A 10 "MBN " " C4 " 6 3 1EE11E  "%UT"  10 ""  0.8 15.04 4 1363 1269 1 "CCD match" 
+  6 2 -34.638000 4.878000 4.060000 200 A 10 "MBN " " C5 " 6 3 1EE11E  "%UT"  10 ""  0.8 14.97 4 1364 1270 1 "CCD match" 
+  7 2 -33.894000 5.447000 3.048000 200 A 10 "MBN " " C6 " 6 3 1EE11E  "%UT"  10 ""  0.8 18.66 4 1365 1271 1 "CCD match" 
+  8 41 -32.437055 6.680261 1.289513 200 A 21 "MBN " "1HXT" 1 3 FFFFFF  ""  21 ""  <> <> <> <> <> <> <>
+  9 41 -32.724024 8.273147 2.029448 200 A 21 "MBN " "2HXT" 1 3 FFFFFF  ""  21 ""  <> <> <> <> <> <> <>
+  10 41 -31.310798 7.307362 2.516472 200 A 21 "MBN " "3HXT" 1 3 FFFFFF  ""  21 ""  <> <> <> <> <> <> <>
+  11 41 -32.690588 8.065085 4.783087 200 A 21 "MBN " " HC2" 1 3 FFFFFF  ""  21 ""  <> <> <> <> <> <> <>
+  12 41 -34.021606 7.015465 6.553857 200 A 21 "MBN " " HC3" 1 3 FFFFFF  ""  21 ""  <> <> <> <> <> <> <>
+  13 41 -35.297922 4.973676 6.122813 200 A 21 "MBN " " HC4" 1 3 FFFFFF  ""  21 ""  <> <> <> <> <> <> <>
+  14 41 -35.178360 3.972848 3.825241 200 A 21 "MBN " " HC5" 1 3 FFFFFF  ""  21 ""  <> <> <> <> <> <> <>
+  15 41 -33.863870 4.997903 2.066265 200 A 21 "MBN " " HC6" 1 3 FFFFFF  ""  21 ""  <> <> <> <> <> <> <>
+  :::
+ } 
+ m_bond[15] { 
+  # First column is bond index #
+  i_m_from
+  i_m_to
+  i_m_order
+  i_m_from_rep
+  i_m_to_rep
+  :::
+  1 1 2 1 3 3
+  2 1 8 1 3 3
+  3 1 9 1 3 3
+  4 1 10 1 3 3
+  5 2 3 2 3 3
+  6 2 7 1 3 3
+  7 3 4 1 3 3
+  8 3 11 1 3 3
+  9 4 5 2 3 3
+  10 4 12 1 3 3
+  11 5 6 1 3 3
+  12 5 13 1 3 3
+  13 6 7 2 3 3
+  14 6 14 1 3 3
+  15 7 15 1 3 3
+  :::
+ } 
+ m_PDB_het_residues[2] { 
+  s_pdb_het_id
+  s_pdb_het_name
+  s_pdb_het_formula
+  :::
+  1 MBN  "TOLUENE"  "C7 H8" 
+  2 EPE  "4-(2-HYDROXYETHYL)-1-PIPERAZINE ETHANESULFONIC ACID"  "C8 H18 N2 O4 S" 
+  :::
+ } 
+ m_PDB_SEQRES[1] { 
+  s_pdb_chain_id
+  s_pdb_SEQRES
+  :::
+  1 A  "MET ASN ILE PHE GLU MET LEU ARG ILE ASP GLU GLY LEU ARG LEU LYS ILE TYR LYS ASP THR GLU GLY TYR TYR THR ILE GLY ILE GLY HIS LEU LEU THR LYS SER PRO SER LEU ASN ALA ALA LYS SER GLU LEU ASP LYS ALA ILE GLY ARG ASN CYS ASN GLY VAL ILE THR LYS ASP GLU ALA GLU LYS LEU PHE ASN GLN ASP VAL ASP ALA ALA VAL ARG GLY ILE LEU ARG ASN ALA LYS LEU LYS PRO VAL TYR ASP SER LEU ASP ALA VAL ARG ARG CYS ALA ALA ILE ASN MET VAL PHE GLN MET GLY GLU THR GLY VAL ALA GLY PHE THR ASN SER LEU ARG MET LEU GLN GLN LYS ARG TRP ASP GLU ALA ALA VAL ASN LEU ALA LYS SER ARG TRP TYR ASN GLN THR PRO ASN ARG ALA LYS ARG VAL ILE THR THR PHE ARG THR GLY THR TRP ASP ALA TYR LYS ASN LEU " 
+  :::
+ } 
+} 
+
