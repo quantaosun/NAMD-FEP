@@ -1,0 +1,6 @@
+complex: BAR-estimator: total free energy change is 10.536724378708504 , total error is 0.05484414573190965
+solvent: BAR-estimator: total free energy change is 9.816090040563225 , total error is 0.019018083084097616
+
+ΔΔG = complex - solvent = 10.536724378708504 - 9.816090040563225 = 0.720634338145279 kcal/mol
+
+while the result from experiment is 0.33 kcal/mol
