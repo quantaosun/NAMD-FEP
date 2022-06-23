@@ -1,14 +1,14 @@
-This folder includs all files about test of T4L_RBFE using 'NAMD-FEP' project.
+This folder includes all files about the test of T4L_RBFE using the 'NAMD-FEP' project.
 
 
-PDB Reader from Charmm-gui can help you on FEPrepare, when your protein.pdb from maestro can't pass through it.
+PDB Reader from Charmm-GUI can help you on FEPrepare when your protein.pdb from maestro can't pass through it.
 
 
 Before run *.namd, compressing *_input_flies.tar.gz to *_input_flies folder which mkdir by yourself in solvent/complex folder.
 And par_opls_aam.inp, updated.prm, reference.prm and fep.tcl, total 4 files, should be copy to solvent/complex folder.
 
 
-nvt.equilibration.namd only run for 0.2 ns. It takes a lot of time, because minimization isn't supproted by GPU.
+nvt.equilibration.namd only run for 0.2 ns. It takes a lot of time because minimization isn't supported by GPU.
 npt.equilibration.namd run for 0.5 ns, and every λ run for 0.5 ns.
 
 
