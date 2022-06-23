@@ -1,0 +1,221 @@
+Driver script for fast_shape job align_ligands_1
+Current time: Mon Jun 13 11:00:41 2022
+Number of CPUs requested = 1
+SCHRODINGER=D:\Program Files (x86)\Schrodinger2020-4
+SCHRODINGER_JOBID=fangzhennan-0-62a6a858
+MMSHARE_EXEC=D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+Invoking fast_shape binary to do initial setup:
+fast_shape -shape reference_ligand.mae -screen ligands_to_align.mae -JOB align_ligands_1 -atomtypes element -flex -sample thorough -max 1000 -JOBHOST localhost -setup
+
+********************************************************************************
+
+SCHRODINGER=D:\Program Files (x86)\Schrodinger2020-4
+SCHRODINGER_JOBID=fangzhennan-0-62a6a858
+MMSHARE_EXEC=D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+********************************************************************************
+
+fast_shape: Mon Jun 13 11:00:42 2022
+
+Shape query = "reference_ligand.mae"
+Screening source = "ligands_to_align.mae"
+
+Options:
+-JOB align_ligands_1
+-JOBHOST localhost
+-atomtypes element
+-flex
+-max 1000
+-sample thorough
+-setup
+
+Doing setup for subjobs . . .
+
+Setup for subjobs complete
+
+CPU time = 0.00 sec
+Elapsed time = 1.00 sec
+
+fast_shape successfully completed
+
+Control returned to fast_shape driver script
+
+Launching fast_shape subjobs . . .
+
+Running subjobs on hosts:
+  localhost (Max: 1)
+Number of jobs:       1
+Max retries per job:  3
+Max allowed failures: unlimited
+Run with -LOCAL:      False
+Verbosity:            normal
+
+Starting JobDJ...
+
+Keep one job on driver host: False
+JobDJ columns:
+  C: Number of completed subjobs
+  A: Number of active subjobs (e.g., submitted, running)
+  W: Number of waiting/pending subjobs
+
+C A W | Activity  JobId  JobName  JobHost
+- - - | --------- -----------------------
+Windows fatal exception: access violation
+
+Current thread 0x00003ccc (most recent call first):
+  File "D:\Program Files (x86)\Schrodinger2020-4\internal\lib\site-packages\schrodinger\job\queue.py", line 2603 in run
+  File "D:\Program Files (x86)\Schrodinger2020-4\internal\bin\fast_shape_driver.py", line 50 in distribute
+  File "D:\Program Files (x86)\Schrodinger2020-4\internal\bin\fast_shape_driver.py", line 550 in <module>
+Windows fatal exception: access violation
+
+Current thread 0x00003ccc (most recent call first):
+  File "D:\Program Files (x86)\Schrodinger2020-4\internal\lib\site-packages\schrodinger\job\queue.py", line 2603 in run
+  File "D:\Program Files (x86)\Schrodinger2020-4\internal\bin\fast_shape_driver.py", line 50 in distribute
+  File "D:\Program Files (x86)\Schrodinger2020-4\internal\bin\fast_shape_driver.py", line 550 in <module>
+Windows fatal exception: access violation
+
+Current thread 0x00003ccc (most recent call first):
+  File "D:\Program Files (x86)\Schrodinger2020-4\internal\lib\site-packages\schrodinger\job\queue.py", line 2603 in run
+  File "D:\Program Files (x86)\Schrodinger2020-4\internal\bin\fast_shape_driver.py", line 50 in distribute
+  File "D:\Program Files (x86)\Schrodinger2020-4\internal\bin\fast_shape_driver.py", line 550 in <module>
+0 1 0 | launched  fangzhennan-0-62a6a85a align_ligands_1_sub_1 localhost [fangzhennan]
+1 0 0 | finished  fangzhennan-0-62a6a85a align_ligands_1_sub_1 localhost [fangzhennan]
+
+All jobs have completed.
+
+1 of 1 job(s) succeeded; 0 job(s) failed.
+
+Invoking fast_shape binary to combine subjobs:
+fast_shape -shape reference_ligand.mae -screen ligands_to_align.mae -JOB align_ligands_1 -atomtypes element -flex -sample thorough -max 1000 -JOBHOST localhost -cleanup
+
+********************************************************************************
+
+SCHRODINGER=D:\Program Files (x86)\Schrodinger2020-4
+SCHRODINGER_JOBID=fangzhennan-0-62a6a858
+MMSHARE_EXEC=D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+********************************************************************************
+
+fast_shape: Mon Jun 13 11:00:45 2022
+
+Shape query = "reference_ligand.mae"
+Screening source = "ligands_to_align.mae"
+
+Options:
+-JOB align_ligands_1
+-JOBHOST localhost
+-atomtypes element
+-cleanup
+-flex
+-max 1000
+-sample thorough
+
+Combining results of completed subjobs . . .
+
+*** Contents of align_ligands_1_sub_1_shape.log ***
+
+Driver script for fast_shape subjob align_ligands_1_sub_1
+Current time: Mon Jun 13 11:00:43 2022
+Number of CPUs requested = 1
+SCHRODINGER=D:\Program Files (x86)\Schrodinger2020-4
+SCHRODINGER_JOBID=fangzhennan-0-62a6a85a
+MMSHARE_EXEC=D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+Invoking fast_shape binary to screen structures:
+fast_shape -shape reference_ligand.mae -screen align_ligands_1_sub_1.list -JOB align_ligands_1 -subjob align_ligands_1_sub_1 -atomtypes element -flex -sample thorough -max 1000 -JOBHOST localhost
+
+********************************************************************************
+
+SCHRODINGER=D:\Program Files (x86)\Schrodinger2020-4
+SCHRODINGER_JOBID=fangzhennan-0-62a6a85a
+MMSHARE_EXEC=D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+********************************************************************************
+
+fast_shape: Mon Jun 13 11:00:43 2022
+
+Shape query = "reference_ligand.mae"
+Screening source = "align_ligands_1_sub_1.list"
+
+Options:
+-JOB align_ligands_1
+-JOBHOST localhost
+-atomtypes element
+-flex
+-max 1000
+-sample thorough
+-subjob align_ligands_1_sub_1
+
+Spawning fast_shape subprocess to screen file "ligands_to_align.mae" (1 of 1):
+fast_shape -shape "reference_ligand.mae" -screen "ligands_to_align.mae" -JOB align_ligands_1 -JOBHOST localhost -atomtypes element -flex -max 1000 -sample thorough -subjob align_ligands_1_sub_1 -subproc
+
+********************************************************************************
+
+SCHRODINGER=D:\Program Files (x86)\Schrodinger2020-4
+SCHRODINGER_JOBID=fangzhennan-0-62a6a85a
+MMSHARE_EXEC=D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+********************************************************************************
+
+fast_shape: Mon Jun 13 11:00:44 2022
+
+Shape query = "reference_ligand.mae"
+Screening source = "ligands_to_align.mae"
+
+Options:
+-JOB align_ligands_1
+-JOBHOST localhost
+-atomtypes element
+-flex
+-max 1000
+-sample thorough
+-subjob align_ligands_1_sub_1
+-subproc
+
+Screening structures in ligands_to_align.mae . . .
+
+Title,#Confs,#Alignments,#Screened
+"ligand0",1,1,1
+"ligand0",1,1,2
+"ligand1",1,1,3
+
+Number of molecules screened = 3
+Number of conformers screened = 3
+
+CPU time = 0.05 sec
+Elapsed time = 0.00 sec
+
+fast_shape successfully completed
+
+********************************************************************************
+
+All structures assigned to subjob align_ligands_1_sub_1 have been processed
+
+CPU time = 0.03 sec
+Elapsed time = 1.00 sec
+
+fast_shape successfully completed
+
+Driver script for fast_shape subjob align_ligands_1_sub_1 finished
+Current time: Mon Jun 13 11:00:44 2022
+Elapsed time = 0:00:00.36
+fast_shape results for align_ligands_1_sub_1 are complete
+
+*** End of align_ligands_1_sub_1_shape.log ***
+
+Concatenating aligned structures from completed subjobs
+
+Concatenating structures from align_ligands_1_sub_1_align.maegz to align_ligands_1_align.maegz . . . 
+Number of aligned structures concatenated so far = 3
+
+CPU time = 0.00 sec
+Elapsed time = 0.00 sec
+
+fast_shape successfully completed
+
+Driver script for fast_shape job align_ligands_1 finished
+Current time: Mon Jun 13 11:00:45 2022
+Elapsed time = 0:00:03.43
+fast_shape results for align_ligands_1 are complete
+[running at reduced cpu priority]

@@ -1,0 +1,105 @@
+COMMAND:
+ D:\Program Files (x86)\Schrodinger2020-4\epik-v5.4\bin\Windows-x64\epik_app.exe -imae C:\Users\fangzhennan\Desktop\T4L_RBFE\input_files\maestro\working_dir\prepwizard_workdir\prepwizard-epik_1.mae -omae prepwizard-epik_1-out.mae -ms 10 -ph 7.0 -pht 2.0 -cg 0.3 0.3 -retain_i -metal_binding
+SCHRODINGER: D:\Program Files (x86)\Schrodinger2020-4
+
+Running Epik version     5.4149
+Epik. Copyright Schrodinger, LLC. All rights reserved.
+
+Input file name:                        C:\Users\fangzhennan\Desktop\T4L_RBFE\input_files\maestro\working_dir\prepwizard_workdir\prepwizard-epik_1.mae
+Output file name:                       prepwizard-epik_1-out.mae
+Maximum number of states set to: 10
+Structure adjustment calculation requested.
+  Target pH set to 7.000
+pHt tolerance set to 2.000000e+00
+Both connectivity and geometry used in determining redundant structures.
+  Structures are distinct if: 
+    any position differs by more than 3.000000e-01
+    the rms difference in positions is larger than 3.000000e-01
+Retain ionization state turned on
+Metal binding mode turned on.
+
+Adjusting structures for pH 7.000000e+00 and minimum probability 1.000000e-02
+Solvent model name:                     water
+[running at reduced cpu priority]
+JobID:                                  fangzhennan-0-62a6a25e
+---------------------------
+Processing Input Structure #1
+        Title: 
+Metal Binding:    Using non-metal probability:          1.000000e+00
+                                              Calculated pKas
+                                                 Conjugate
+                                          Atom   Acid/Base  pKa
+. . . . . . . . . . . . . . . . . . . . . . .
+Variation: 1
+ pKa penalty:                                 0.00 kcal/mol
+     Charging penalty:                        0.00 kcal/mol
+     Neutralization penalty:                  0.00 kcal/mol
+ Overall Penalty (tautomerization included): -0.00 kcal/mol
+ Total Charge: 0
+ Metal Penalty:                              -0.00 kcal/mol
+---------------------------
+Processing Input Structure #2
+        Title: 
+Metal Binding:    Using non-metal probability:          1.382954e-09
+Metal Binding:    Using non-metal probability:          8.474392e-02
+Metal Binding:    Using non-metal probability:          7.052318e-01
+Metal Binding:    Using non-metal probability:          2.100243e-01
+                                              Calculated pKas
+                                                 Conjugate
+                                          Atom   Acid/Base  pKa
+. . . . . . . . . . . . . . . . . . . . . . .
+Variation: 1
+                                            28   Conj_Acid 14.75
+                                            33   Conj_Acid -0.30
+                                             4   Conj_Base  7.69
+                                             1   Conj_Base  6.21
+                                             9   Conj_Base  0.03
+ pKa penalty:                                11.09 kcal/mol
+     Charging penalty:                        0.00 kcal/mol
+     Neutralization penalty:                 11.09 kcal/mol
+ Overall Penalty (tautomerization included): 12.09 kcal/mol
+ Total Charge: 0
+ Metal Penalty:                              12.09 kcal/mol
+. . . . . . . . . . . . . . . . . . . . . . .
+Variation: 2
+                                            28   Conj_Acid 14.75
+                                            13   Conj_Base -0.30
+                                             4   Conj_Base  7.86
+                                             1   Conj_Base  7.37
+                                             9   Conj_Base  0.03
+ pKa penalty:                                 1.97 kcal/mol
+     Charging penalty:                        0.00 kcal/mol
+     Neutralization penalty:                  1.97 kcal/mol
+ Overall Penalty (tautomerization included):  1.46 kcal/mol
+ Total Charge: -1
+ Metal Penalty:                               1.46 kcal/mol
+. . . . . . . . . . . . . . . . . . . . . . .
+Variation: 3
+                                            28   Conj_Acid 13.20
+                                            13   Conj_Base -0.35
+                                            33   Conj_Acid  7.86
+                                             1   Conj_Base  3.76
+                                             9   Conj_Base -2.79
+ pKa penalty:                                 0.08 kcal/mol
+     Charging penalty:                        0.08 kcal/mol
+     Neutralization penalty:                  0.00 kcal/mol
+ Overall Penalty (tautomerization included):  0.21 kcal/mol
+ Total Charge: 0
+ Metal Penalty:                               0.21 kcal/mol
+. . . . . . . . . . . . . . . . . . . . . . .
+Variation: 4
+                                            28   Conj_Acid 14.43
+                                            13   Conj_Base -0.90
+                                             4   Conj_Base  5.95
+                                            33   Conj_Acid  7.37
+                                             9   Conj_Base -0.31
+ pKa penalty:                                 0.26 kcal/mol
+     Charging penalty:                        0.21 kcal/mol
+     Neutralization penalty:                  0.05 kcal/mol
+ Overall Penalty (tautomerization included):  0.92 kcal/mol
+ Total Charge: 0
+ Metal Penalty:                               0.92 kcal/mol
+---------------------------
+
+Job completed at Mon Jun 13 10:35:12 2022
+Elapsed time: 1.5279s

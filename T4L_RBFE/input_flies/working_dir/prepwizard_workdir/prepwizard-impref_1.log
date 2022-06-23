@@ -1,0 +1,409 @@
+
+** maxlevel set to 4
+  **
+  ** Beginning refinement level 0
+  **
+
+[fangzhennan.hhtpharm.com]
+%IMPACT-I (openwt): Request to open FORMATTED file prepwizard-impref_1_ref0.out on unit   2
+ Entering IMPACT execution environment 
+ Date: Monday, June 13 2022, at 11:31:40
+ Impact version 89149
+ mmshare version        52149
+ Copyright (c) Schrodinger, LLC.
+ All Rights Reserved.
+
+ Windows Host: fangzhennan
+ Job Name: prepwizard-impref_1_ref0
+ SCHRODINGER  directory: D:\Program Files (x86)\Schrodinger2020-4
+ IMPACT_EXEC  directory: D:\Program Files (x86)\Schrodinger2020-4\impact-v8.9\bin\Windows-x64
+ MMSHARE_EXEC directory: D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+ Clock-based global random seed:     1655091100
+%IMPACT-I(foldmain): calling OPLS3e atomtyping ...
+%IMPACT-I(foldmain): finished parameter assignment
+ PARM read from file "paramstd.dat"
+ Parameter obtained from atomtyping
+      Current coord. are written to file: "prepwizard-impref_1.init_coord.rst"
+      Box dimensions not written
+
+
+ Total number of atoms  =  2650
+ 
+ Neighbor List Cutoff Settings
+ ==================================
+ Cutoff radius:   10.0000000000000     
+ Update frequency: every           10  steps
+ Species   1 : Neighbors are calculated on a per residue basis
+ Species   1 : Cutoff by inter-atomic distances
+ 
+ Step number:          0         Non-bonded count:   744146
+ E-pot        RMS grad     Max grad    
+ -9.91918E+01  1.84714E+01  8.36605E+02
+ Step number:         10         Non-bonded count:   744146
+ -9.12281E+02  1.81824E+00  3.01453E+01
+ Step number:         20         Non-bonded count:   742676
+ -9.77028E+02  9.03754E-01  1.69409E+01
+ Step number:         30         Non-bonded count:   743835
+ -1.00086E+03  6.33997E-01  1.14460E+01
+ Step number:         40         Non-bonded count:   744499
+ -1.01419E+03  4.83684E-01  6.35522E+00
+ Step number:         50         Non-bonded count:   744173
+ -1.02135E+03  3.41210E-01  3.77656E+00
+ Step number:         60         Non-bonded count:   744372
+ -1.02605E+03  2.86986E-01  4.14864E+00
+ Step number:         70         Non-bonded count:   744628
+ -1.02932E+03  2.52366E-01  2.38802E+00
+ Step number:         80         Non-bonded count:   744628
+ -1.03224E+03  2.55363E-01  3.52739E+00
+ Step number:         90         Non-bonded count:   744628
+ -1.03493E+03  2.41257E-01  3.77783E+00
+ Step number:        100         Non-bonded count:   744220
+ -1.03704E+03  2.08395E-01  2.46838E+00
+ Step number:        100         Non-bonded count:   743964
+ -1.03702E+03  2.08396E-01  2.46838E+00
+      Current coord. are written to file: "prepwizard-impref_1.min0_coord.rst"
+      Box dimensions not written
+      Current coordinates are read from file: "prepwizard-impref_1.init_coord.rst"
+      Box dimensions not read
+          read from "prepwizard-impref_1.init_coord.rst"
+  
+ Energy and Force Generation Info: 
+ --------------------------------- 
+ Number of E&F called:     258
+ PARM read from file "paramstd.dat"
+ Parameter obtained from atomtyping
+      Current coordinates are read from file: "prepwizard-impref_1.min0_coord.rst"
+      Box dimensions not read
+          read from "prepwizard-impref_1.min0_coord.rst"
+
+
+ Total number of atoms  =  2650
+ 
+ Neighbor List Cutoff Settings
+ ==================================
+ Cutoff radius:   10.0000000000000     
+ Update frequency: every           10  steps
+ Species   1 : Neighbors are calculated on a per residue basis
+ Species   1 : Cutoff by inter-atomic distances
+ 
+ Step number:          0         Non-bonded count:   743964
+ E-pot        RMS grad     Max grad    
+  5.48094E+01  6.33059E+00  4.91481E+01
+ Step number:         10         Non-bonded count:   743964
+ -5.73851E+02  1.91700E+00  2.27390E+01
+ Step number:         20         Non-bonded count:   745615
+ -6.57696E+02  9.90519E-01  1.64490E+01
+ Step number:         30         Non-bonded count:   744443
+ -6.80571E+02  5.29368E-01  1.20315E+01
+ Step number:         40         Non-bonded count:   744002
+ -6.90985E+02  3.99310E-01  5.80426E+00
+ Step number:         50         Non-bonded count:   743858
+ -6.95173E+02  2.59529E-01  3.29293E+00
+ Step number:         60         Non-bonded count:   743573
+ -6.97813E+02  2.46892E-01  4.88278E+00
+ Step number:         70         Non-bonded count:   743573
+ -7.00124E+02  2.06968E-01  3.96532E+00
+ Step number:         80         Non-bonded count:   743573
+ -7.01878E+02  1.82657E-01  2.91259E+00
+ Step number:         90         Non-bonded count:   743573
+ -7.03072E+02  1.54230E-01  2.97535E+00
+ Step number:        100         Non-bonded count:   743573
+ -7.03939E+02  1.27431E-01  1.86829E+00
+ Step number:        100         Non-bonded count:   743573
+ -7.03939E+02  1.27431E-01  1.86829E+00
+  
+ Energy and Force Generation Info: 
+ --------------------------------- 
+ Number of E&F called:     516
+
+
+Final Energy Reports:
+------------------------------------
+ Total Energy of the system...... -7.03939E+02 kcal/mol
+ Total Potential Energy.......... -7.03939E+02 kcal/mol
+ Total Kinetic Energy............  0.00000E+00 kcal/mol
+ Temperature of the system.......        0.000 K
+ Bond Stretch Energy.............  5.05999E+01 kcal/mol
+ Angle Bending Energy............  2.73465E+02 kcal/mol
+ Torsion Angle Energy............  2.08891E+02 kcal/mol
+ Restraining Energy for Torsions.  0.00000E+00 kcal/mol
+ 1,4 Lennard Jones Energy........  8.28603E+02 kcal/mol
+ 1,4 Electrostatic Energy........  1.80198E+02 kcal/mol
+ Lennard Jones Energy............ -1.46573E+03 kcal/mol
+ Electrostatic Energy............ -8.71535E+02 kcal/mol
+ H-bond Energy...................  0.00000E+00 kcal/mol
+ 
+ Exiting IMPACT execution environment 
+ Date: Monday, June 13 2022, at 11:31:50
+%IMPACT-I (timit): Total CPU time =       8.84 seconds (   0.1 minutes)
+Total elapsed time = 10 seconds
+  ** Completed refinement level 0      rmsd =  0.089
+  **
+  ** Beginning refinement level 1
+  **
+
+[fangzhennan.hhtpharm.com]
+%IMPACT-I (openwt): Request to open FORMATTED file prepwizard-impref_1_ref1.out on unit   2
+ Entering IMPACT execution environment 
+ Date: Monday, June 13 2022, at 11:31:51
+ Impact version 89149
+ mmshare version        52149
+ Copyright (c) Schrodinger, LLC.
+ All Rights Reserved.
+
+ Windows Host: fangzhennan
+ Job Name: prepwizard-impref_1_ref1
+ SCHRODINGER  directory: D:\Program Files (x86)\Schrodinger2020-4
+ IMPACT_EXEC  directory: D:\Program Files (x86)\Schrodinger2020-4\impact-v8.9\bin\Windows-x64
+ MMSHARE_EXEC directory: D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+ Clock-based global random seed:     1655091111
+%IMPACT-I(foldmain): calling OPLS3e atomtyping ...
+%IMPACT-I(foldmain): finished parameter assignment
+ PARM read from file "paramstd.dat"
+ Parameter obtained from atomtyping
+
+
+ Total number of atoms  =  2650
+ 
+ Neighbor List Cutoff Settings
+ ==================================
+ Cutoff radius:   10.0000000000000     
+ Update frequency: every           10  steps
+ Species   1 : Neighbors are calculated on a per residue basis
+ Species   1 : Cutoff by inter-atomic distances
+ 
+ Step number:          0         Non-bonded count:   743573
+ E-pot        RMS grad     Max grad    
+ -7.95523E+02  6.91567E-01  4.82451E+00
+ Step number:         10         Non-bonded count:   743573
+ -8.31447E+02  6.33498E-01  8.54507E+00
+ Step number:         20         Non-bonded count:   743936
+ -8.45350E+02  4.17803E-01  7.42630E+00
+ Step number:         30         Non-bonded count:   744601
+ -8.51646E+02  2.85179E-01  4.97247E+00
+ Step number:         40         Non-bonded count:   744773
+ -8.54391E+02  2.11799E-01  2.43958E+00
+ Step number:         50         Non-bonded count:   744583
+ -8.55836E+02  1.54370E-01  1.81247E+00
+ Step number:         60         Non-bonded count:   744149
+ -8.56643E+02  1.22328E-01  1.38461E+00
+ Step number:         70         Non-bonded count:   744149
+ -8.57238E+02  1.08707E-01  1.09185E+00
+ Step number:         80         Non-bonded count:   744339
+ -8.57708E+02  9.25376E-02  8.87941E-01
+ Step number:         90         Non-bonded count:   745242
+ -8.58085E+02  8.19657E-02  1.30827E+00
+ Step number:        100         Non-bonded count:   745375
+ E-pot        RMS grad     Max grad    
+ -8.58336E+02  6.87671E-02  1.26399E+00
+ Step number:        100         Non-bonded count:   745375
+ -8.58336E+02  6.87671E-02  1.26399E+00
+  
+ Energy and Force Generation Info: 
+ --------------------------------- 
+ Number of E&F called:     271
+
+
+Final Energy Reports:
+------------------------------------
+ Total Energy of the system...... -8.58336E+02 kcal/mol
+ Total Potential Energy.......... -8.58336E+02 kcal/mol
+ Total Kinetic Energy............  0.00000E+00 kcal/mol
+ Temperature of the system.......        0.000 K
+ Bond Stretch Energy.............  6.95874E+01 kcal/mol
+ Angle Bending Energy............  3.00043E+02 kcal/mol
+ Torsion Angle Energy............  1.89830E+02 kcal/mol
+ Restraining Energy for Torsions.  0.00000E+00 kcal/mol
+ 1,4 Lennard Jones Energy........  7.61166E+02 kcal/mol
+ 1,4 Electrostatic Energy........  1.75943E+02 kcal/mol
+ Lennard Jones Energy............ -1.53063E+03 kcal/mol
+ Electrostatic Energy............ -8.48076E+02 kcal/mol
+ H-bond Energy...................  0.00000E+00 kcal/mol
+ 
+ Exiting IMPACT execution environment 
+ Date: Monday, June 13 2022, at 11:31:58
+%IMPACT-I (timit): Total CPU time =       7.17 seconds (   0.1 minutes)
+Total elapsed time = 8 seconds
+  ** Completed refinement level 1      rmsd =  0.155
+  **
+  ** Beginning refinement level 2
+  **
+
+[fangzhennan.hhtpharm.com]
+%IMPACT-I (openwt): Request to open FORMATTED file prepwizard-impref_1_ref2.out on unit   2
+ Entering IMPACT execution environment 
+ Date: Monday, June 13 2022, at 11:31:59
+ Impact version 89149
+ mmshare version        52149
+ Copyright (c) Schrodinger, LLC.
+ All Rights Reserved.
+
+ Windows Host: fangzhennan
+ Job Name: prepwizard-impref_1_ref2
+ SCHRODINGER  directory: D:\Program Files (x86)\Schrodinger2020-4
+ IMPACT_EXEC  directory: D:\Program Files (x86)\Schrodinger2020-4\impact-v8.9\bin\Windows-x64
+ MMSHARE_EXEC directory: D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+ Clock-based global random seed:     1655091119
+%IMPACT-I(foldmain): calling OPLS3e atomtyping ...
+%IMPACT-I(foldmain): finished parameter assignment
+ PARM read from file "paramstd.dat"
+ Parameter obtained from atomtyping
+
+
+ Total number of atoms  =  2650
+ 
+ Neighbor List Cutoff Settings
+ ==================================
+ Cutoff radius:   10.0000000000000     
+ Update frequency: every           10  steps
+ Species   1 : Neighbors are calculated on a per residue basis
+ Species   1 : Cutoff by inter-atomic distances
+ 
+ Step number:          0         Non-bonded count:   745375
+ E-pot        RMS grad     Max grad    
+ -8.82125E+02  2.01955E-01  1.79329E+00
+ Step number:         10         Non-bonded count:   745375
+ -8.88871E+02  3.99033E-01  5.10713E+00
+ Step number:         20         Non-bonded count:   746262
+ -8.96482E+02  4.08488E-01  1.18564E+01
+ Step number:         30         Non-bonded count:   745681
+ -8.99835E+02  2.59697E-01  6.13275E+00
+ Step number:         40         Non-bonded count:   745324
+ -9.02214E+02  2.05775E-01  2.47145E+00
+ Step number:         50         Non-bonded count:   744678
+ -9.03611E+02  1.66023E-01  1.88924E+00
+ Step number:         60         Non-bonded count:   744678
+ -9.04656E+02  1.42227E-01  1.68940E+00
+ Step number:         70         Non-bonded count:   744678
+ -9.05323E+02  1.22615E-01  2.26332E+00
+ Step number:         80         Non-bonded count:   743540
+ -9.05756E+02  9.30710E-02  1.00792E+00
+ Step number:         90         Non-bonded count:   743768
+ -9.06109E+02  8.30245E-02  8.09607E-01
+ Step number:        100         Non-bonded count:   743768
+ E-pot        RMS grad     Max grad    
+ -9.06349E+02  7.42274E-02  1.19067E+00
+ Step number:        100         Non-bonded count:   743768
+ -9.06349E+02  7.42274E-02  1.19067E+00
+  
+ Energy and Force Generation Info: 
+ --------------------------------- 
+ Number of E&F called:     273
+
+
+Final Energy Reports:
+------------------------------------
+ Total Energy of the system...... -9.06349E+02 kcal/mol
+ Total Potential Energy.......... -9.06349E+02 kcal/mol
+ Total Kinetic Energy............  0.00000E+00 kcal/mol
+ Temperature of the system.......        0.000 K
+ Bond Stretch Energy.............  7.33408E+01 kcal/mol
+ Angle Bending Energy............  3.04105E+02 kcal/mol
+ Torsion Angle Energy............  1.76199E+02 kcal/mol
+ Restraining Energy for Torsions.  0.00000E+00 kcal/mol
+ 1,4 Lennard Jones Energy........  7.48238E+02 kcal/mol
+ 1,4 Electrostatic Energy........  1.75006E+02 kcal/mol
+ Lennard Jones Energy............ -1.55629E+03 kcal/mol
+ Electrostatic Energy............ -8.39673E+02 kcal/mol
+ H-bond Energy...................  0.00000E+00 kcal/mol
+ 
+ Exiting IMPACT execution environment 
+ Date: Monday, June 13 2022, at 11:32:07
+%IMPACT-I (timit): Total CPU time =       7.27 seconds (   0.1 minutes)
+Total elapsed time = 8 seconds
+  ** Completed refinement level 2      rmsd =  0.231
+  **
+  ** Beginning refinement level 3
+  **
+
+[fangzhennan.hhtpharm.com]
+%IMPACT-I (openwt): Request to open FORMATTED file prepwizard-impref_1_ref3.out on unit   2
+ Entering IMPACT execution environment 
+ Date: Monday, June 13 2022, at 11:32:08
+ Impact version 89149
+ mmshare version        52149
+ Copyright (c) Schrodinger, LLC.
+ All Rights Reserved.
+
+ Windows Host: fangzhennan
+ Job Name: prepwizard-impref_1_ref3
+ SCHRODINGER  directory: D:\Program Files (x86)\Schrodinger2020-4
+ IMPACT_EXEC  directory: D:\Program Files (x86)\Schrodinger2020-4\impact-v8.9\bin\Windows-x64
+ MMSHARE_EXEC directory: D:\Program Files (x86)\Schrodinger2020-4\mmshare-v5.2\bin\Windows-x64
+
+ Clock-based global random seed:     1655091128
+%IMPACT-I(foldmain): calling OPLS3e atomtyping ...
+%IMPACT-I(foldmain): finished parameter assignment
+ PARM read from file "paramstd.dat"
+ Parameter obtained from atomtyping
+
+
+ Total number of atoms  =  2650
+ 
+ Neighbor List Cutoff Settings
+ ==================================
+ Cutoff radius:   10.0000000000000     
+ Update frequency: every           10  steps
+ Species   1 : Neighbors are calculated on a per residue basis
+ Species   1 : Cutoff by inter-atomic distances
+ 
+ Step number:          0         Non-bonded count:   743768
+ E-pot        RMS grad     Max grad    
+ -9.19072E+02  1.08416E-01  1.58873E+00
+ Step number:         10         Non-bonded count:   743768
+ -9.21245E+02  3.35211E-01  4.65215E+00
+ Step number:         20         Non-bonded count:   743855
+ -9.24612E+02  2.44081E-01  2.79713E+00
+ Step number:         30         Non-bonded count:   743865
+ -9.26800E+02  2.27754E-01  3.23591E+00
+ Step number:         40         Non-bonded count:   744279
+ -9.29164E+02  2.41483E-01  2.17693E+00
+ Step number:         50         Non-bonded count:   744583
+ -9.31697E+02  2.38593E-01  3.25860E+00
+ Step number:         60         Non-bonded count:   745168
+ -9.32745E+02  1.48257E-01  1.11715E+00
+ Step number:         70         Non-bonded count:   745857
+ -9.33741E+02  1.55814E-01  2.01200E+00
+ Step number:         80         Non-bonded count:   745857
+ -9.34702E+02  1.42773E-01  2.40330E+00
+ Step number:         90         Non-bonded count:   746318
+ -9.35537E+02  1.29295E-01  2.59580E+00
+ Step number:        100         Non-bonded count:   746318
+ -9.36058E+02  9.97546E-02  1.30163E+00
+ Step number:        100         Non-bonded count:   746208
+ E-pot        RMS grad     Max grad    
+ -9.36063E+02  9.97537E-02  1.30163E+00
+  
+ Energy and Force Generation Info: 
+ --------------------------------- 
+ Number of E&F called:     266
+
+
+Final Energy Reports:
+------------------------------------
+ Total Energy of the system...... -9.36063E+02 kcal/mol
+ Total Potential Energy.......... -9.36063E+02 kcal/mol
+ Total Kinetic Energy............  0.00000E+00 kcal/mol
+ Temperature of the system.......        0.000 K
+ Bond Stretch Energy.............  7.37744E+01 kcal/mol
+ Angle Bending Energy............  3.07984E+02 kcal/mol
+ Torsion Angle Energy............  1.64076E+02 kcal/mol
+ Restraining Energy for Torsions.  0.00000E+00 kcal/mol
+ 1,4 Lennard Jones Energy........  7.45707E+02 kcal/mol
+ 1,4 Electrostatic Energy........  1.74901E+02 kcal/mol
+ Lennard Jones Energy............ -1.56646E+03 kcal/mol
+ Electrostatic Energy............ -8.43712E+02 kcal/mol
+ H-bond Energy...................  0.00000E+00 kcal/mol
+ 
+ Exiting IMPACT execution environment 
+ Date: Monday, June 13 2022, at 11:32:15
+%IMPACT-I (timit): Total CPU time =       7.22 seconds (   0.1 minutes)
+Total elapsed time = 8 seconds
+  ** Completed refinement level 3      rmsd =  0.337
+
+** Refinement finished. Final level: 2
+
+** The refined complex file is prepwizard-impref_1_ref.mae.

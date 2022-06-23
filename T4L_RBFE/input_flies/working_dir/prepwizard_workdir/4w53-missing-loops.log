@@ -1,0 +1,20 @@
+--------------------------------------------------------------------------------
+    Build Missing Protein Loops
+--------------------------------------------------------------------------------
+JobId          : fangzhennan-0-62a6a1f9
+Name           : 4w53-missing-loops
+Program        : Build Missing Protein Loops
+Host           : fangzhennan.hhtpharm.com
+Dir            : C:\Users\fangzhennan\Desktop\T4L_RBFE\input_files\maestro\working_dir\prepwizard_workdir
+HostEntry      : localhost
+JobHost        : fangzhennan.hhtpharm.com
+JobDir         : C:\Users\fangzhennan\AppData\Local\Schrodinger\tmp\4w53-missing-loops
+JobSchrodinger : D:\Program Files (x86)\Schrodinger2020-4
+Commandline    : D:\Program Files (x86)\Schrodinger2020-4\run.exe -FROM psp build_missing_loops.py 4w53-missing-loops-in.maegz -JOBNAME 4w53-missing-loops -fasta_file 4w53.fasta -DISP ignore -HOST localhost -VIEWNAME B6G0VN7USNTGPNAAIXVQCT8XNL1M3JO5 -PROJ C:\Users\fangzhennan\Desktop\T4L_RBFE\input_files\maestro\working_dir\T4L_RBFE.prj
+StartTime      : 2022-06-13-10:33:33
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+All Entries Succesfully Processed
+Total Time Elapsed (hours:minutes:seconds)    0:00:00
+[running at reduced cpu priority]
