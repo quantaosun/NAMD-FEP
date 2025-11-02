@@ -1,5 +1,8 @@
 # NAMD-FEP
 
+<img width="1489" height="590" alt="image" src="https://github.com/user-attachments/assets/a8d4088a-076c-4ca0-92fa-ca8235001ee7" />
+
+
 # If you are familar with NAMD and have good HPC resources, please consider using Charmm GUI RBF workflow instead of this one.
 
 The primary goal of this repository is to calculate the difference of binding free energy of a pair of small molecules against the same protein target, i.e., the ∆∆G of binding, which is of significant importance in hit-to-lead drug discovery.
