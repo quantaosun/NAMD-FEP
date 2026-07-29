@@ -134,13 +134,11 @@ alchOutFreq             10
 alchVdwLambdaEnd        1.0
 alchElecLambdaStart     0.5
 alchVdWShiftCoeff       5.0
-alchDecouple            yes
+alchDecouple            off
 
-#alchEquilSteps          500000
+alchEquilSteps          500000
 
 #alchLambda		0.9375
 #alchLambda2		0.875
-#run		        5000000        ; # 5 ns
-alchEquilSteps          50
-set numSteps            500       ; # 0.5 ns as a total
+set numSteps            5000000   ; # 10 ns per lambda at 2 fs
 runFEP 1.0 0.0 -0.0625 $numSteps
