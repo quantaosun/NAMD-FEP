@@ -134,7 +134,7 @@ alchOutFreq             10
 alchVdwLambdaEnd        1.0
 alchElecLambdaStart     0.5
 alchVdWShiftCoeff       5.0
-alchDecouple            off
+alchDecouple            yes
 
 #alchEquilSteps          500000
 
@@ -144,4 +144,3 @@ alchDecouple            off
 alchEquilSteps          50
 set numSteps            500       ; # 0.5 ns as a total
 runFEP 1.0 0.0 -0.0625 $numSteps
-

@@ -134,7 +134,7 @@ alchOutFreq             10
 alchVdwLambdaEnd        1.0
 alchElecLambdaStart     0.5
 alchVdWShiftCoeff       5.0
-alchDecouple            off
+alchDecouple            yes
 
 #alchEquilSteps          500000
 
