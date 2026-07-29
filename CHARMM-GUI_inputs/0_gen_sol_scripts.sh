@@ -469,7 +469,7 @@ EOF
 done
 
 # Backward FEP windows (λ_i → λ_{i-1})
-for i in {15..1}; do
+for i in $(seq 15 -1 1); do
     lambda1=${LAMBDA_VALUES[$i]}
     lambda2=${LAMBDA_VALUES[$((i-1))]}
     cat > fep_backward_${i}.conf << EOF

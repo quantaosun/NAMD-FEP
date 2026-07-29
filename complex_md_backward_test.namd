@@ -27,9 +27,9 @@ structure               ionized.psf
 # INITIAL CONDITIONS
 
 coordinates             ionized_complex.pdb
-bincoordinates          md_forward_2.coor
-binvelocities           md_forward_2.vel
-extendedsystem          md_forward_2.xsc
+bincoordinates          md_forward_modi.coor
+binvelocities           md_forward_modi.vel
+extendedsystem          md_forward_modi.xsc
 
 # OUTPUT FREQUENCIES
 

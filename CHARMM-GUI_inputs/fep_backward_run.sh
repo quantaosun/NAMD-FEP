@@ -1,11 +1,11 @@
 #!/bin/bash
 
-echo "Starting backward FEP (A→B)"
+echo "Starting Backward FEP (B→A)"
 
-# Run forward FEP windows sequentially
-for i in {15..1}; do
+# Run backward FEP windows sequentially (15 down to 0)
+for i in $(seq 15 -1 0); do
     echo "========================================"
-    echo "Running forward window $i"
+    echo "Running backward window $i"
     echo "========================================"
     namd2 +p32 fep_backward_${i}.conf | tee fep_backward_${i}.out
     echo "Window $i completed"

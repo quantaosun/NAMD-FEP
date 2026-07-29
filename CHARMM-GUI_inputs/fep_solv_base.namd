@@ -120,4 +120,4 @@ alchElecLambdaStart     0.5
 alchVdWShiftCoeff       6.0
 alchDecouple            off
 
-alchEquilSteps          0
+alchEquilSteps          50000

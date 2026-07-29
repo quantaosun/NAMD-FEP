@@ -2,8 +2,8 @@
 
 echo "Starting Forward FEP (A→B)"
 
-# Run forward FEP windows sequentially
-for i in {0..14}; do
+# Run forward FEP windows sequentially (0 to 14)
+for i in $(seq 0 14); do
     echo "========================================"
     echo "Running forward window $i"
     echo "========================================"

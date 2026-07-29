@@ -1,3 +1,17 @@
+# =============================================================================
+# parameter_patch2.txt — CHARMM force-field parameter file references
+# =============================================================================
+# This file is NOT a parameter patch (despite the misleading name).
+# It is a list of `parameters` directives inserted into NAMD config files
+# to ensure all necessary CHARMM36 force-field parameter files are loaded.
+#
+# IMPORTANT: If you receive "Unable to open CHARMM file" errors, make sure
+# the toppar/ directory from toppar_modified.zip is present at:
+#   ../../toppar/  (relative to complex/ or solvent/ subdirectory)
+#
+# Also ensure that CHARMM RTF (topology) files are accessible. Some are
+# bundled in the .str stream files; verify with your Feprepare output.
+# =============================================================================
 
 parameters              ../../toppar/par_all36m_prot.prm
 parameters              ../../toppar/par_all36_na.prm
@@ -52,4 +66,3 @@ parameters              ../../toppar/toppar_water_ions.mod.str
 #parameters               top_opls_aam.inp
 #parameters               toppar_all36_carb_glycopeptide.str
 parameters               ../updated.prm
-
