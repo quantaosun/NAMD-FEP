@@ -93,3 +93,25 @@ Before migrating a production system, validate both solvent and complex legs:
 check topology completeness, forward/reverse agreement, replicate convergence,
 and consistent energies against the existing T4L example. The local workflow
 does not replace chemical validation of ligand parameters.
+
+## Local ligand preparation
+
+`tools/ligand_prepare.py` provides alignment, hybrid-PDB construction, and
+NAMD FEP B-factor generation without FepPrepare:
+
+```bash
+python3 tools/ligand_prepare.py align \
+  --reference ligand_a.pdb --mobile ligand_b.pdb --output ligand_b_aligned.pdb
+
+python3 tools/ligand_prepare.py hybrid \
+  --ligand-a ligand_a.pdb --ligand-b ligand_b_aligned.pdb \
+  --output ligand_hybrid.pdb --fep-output ligand_hybrid.fep
+```
+
+The hybrid writer uses the B-factor column referenced by `alchCol B`:
+common atoms are `0.00`, atoms disappearing from ligand A are `-1.00`, and
+atoms appearing from ligand B are `1.00`. It preserves A records and appends
+B-only records. The generated PDB still requires a compatible dual-topology
+PSF and CHARMM/CGenFF parameter files; these scripts do not invent atom types,
+charges, bonds, angles, or dihedrals. Atom matching is based on unique atom
+name plus element, so inspect the hybrid before production.
