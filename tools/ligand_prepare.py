@@ -39,8 +39,14 @@ def centroid(points: list[tuple[float, float, float]]) -> tuple[float, float, fl
     return tuple(sum(point[i] for point in points) / len(points) for i in range(3))
 
 
-def covariance(a, b):
-    return [[sum((x[i] - a[i]) * (y[j] - b[j]) for x, y in zip(a, b)) for j in range(3)] for i in range(3)]
+def covariance(points_a, points_b, center_a, center_b):
+    return [
+        [
+            sum((x[i] - center_a[i]) * (y[j] - center_b[j]) for x, y in zip(points_a, points_b))
+            for j in range(3)
+        ]
+        for i in range(3)
+    ]
 
 
 def rotation_from_covariance(c):
@@ -82,7 +88,9 @@ def align_atoms(reference: list[Atom], mobile: list[Atom]) -> dict[str, tuple[fl
     mob = {atom.key: atom.xyz for atom in mobile}
     ref_center = centroid([ref[key] for key in common])
     mob_center = centroid([mob[key] for key in common])
-    rotation = rotation_from_covariance(covariance([mob[key] for key in common], [ref[key] for key in common]))
+    rotation = rotation_from_covariance(
+        covariance([mob[key] for key in common], [ref[key] for key in common], mob_center, ref_center)
+    )
     return {atom.key: transform(atom.xyz, mob_center, ref_center, rotation) for atom in mobile}
 
 
