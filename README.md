@@ -67,7 +67,7 @@ The supported direction for new projects is a hybrid local workflow:
    ```bash
    python3 tools/rbfe_workflow.py validate ligand.pdb ligand.str
    python3 tools/rbfe_workflow.py generate \
-     --template complex_md_forward_test.namd \
+     --template tools/independent_window.namd \
      --output-dir windows/forward --windows 16
    ```
 

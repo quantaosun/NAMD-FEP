@@ -1,0 +1,35 @@
+# Copy this template into a prepared solvent or complex directory and adjust
+# the structure, coordinates, parameter, and FEP file names before generation.
+structure             system.psf
+coordinates           system.pdb
+parameters            ligand.prm
+
+paraTypeCharmm        on
+exclude               scaled1-4
+1-4scaling            1.0
+
+timestep              2.0
+rigidBonds            all
+PME                    yes
+PMEGridSpacing        1.0
+switching             on
+switchdist             10.0
+cutoff                 12.0
+pairlistdist           14.0
+
+alch                   on
+alchType               FEP
+alchFile               system.fep
+alchCol                B
+alchLambda             @ALCH_LAMBDA@
+alchLambda2            @ALCH_LAMBDA2@
+alchVdwLambdaEnd       1.0
+alchElecLambdaStart    0.5
+alchVdWShiftCoeff      5.0
+alchDecouple           off
+alchEquilSteps        50000
+alchOutFreq            100
+alchOutFile            window.fepout
+
+set numSteps           500000
+runFEP @ALCH_LAMBDA@ @ALCH_LAMBDA2@ 0.0625 $numSteps
