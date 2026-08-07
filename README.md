@@ -115,3 +115,111 @@ B-only records. The generated PDB still requires a compatible dual-topology
 PSF and CHARMM/CGenFF parameter files; these scripts do not invent atom types,
 charges, bonds, angles, or dihedrals. Atom matching is based on unique atom
 name plus element, so inspect the hybrid before production.
+
+# Following the tutorial without Maestro or the Feprepare web server
+
+The PDF tutorial (`NAMD-FEP-tutorial.pdf`, 1MQ5 XLC -> 1MQ6 XLD) was written
+around two proprietary/remote resources: Schrodinger Maestro for protein
+preparation and ligand alignment, and the Feprepare web server
+(https://feprepare.vi-seem.eu/) for building the dual-topology hybrid and the
+NAMD inputs. Both are optional. Every step below maps a tutorial step to a
+free, local, open-source replacement; only NAMD itself is a license download.
+
+**Step 1 - protein preparation (replaces Maestro PrepWizard).** Download the
+biological assembly from the PDB (for the tutorial: 1MQ5 and 1MQ6), keep the
+relevant chains, and remove waters and co-factors except the reference ligand.
+Instead of Maestro, use one of:
+
+- CHARMM-GUI PDB Reader (free web) to fill missing residues, protonate, and
+  generate a clean PDB/PSF, or
+- `pdbfixer` (OpenMM, open source) plus `reduce` or VMD `psfgen` for
+  hydrogens, or
+- VMD `psfgen` directly on a curated PDB if no loops need rebuilding.
+
+Whatever the tool, reproduce the Maestro outputs manually: check the
+protonation states (the tutorial neutralized both ligands and recorded the
+protonation-state penalties S1/S2 so that
+`ddG = ddG_FEP + (S2 - S1)`), delete protein hydrogens if your ligand
+pipeline requires it, and strip `CONECT` records from the bottom of the PDB
+with any text editor instead of Sublime. Save `protein.pdb`, `XLC.pdb`
+(reference), and `XLD.pdb` (mutation).
+
+**Step 1b - ligand alignment (replaces Maestro "flexible ligand alignment" /
+"superimpose structures").** Use the bundled alignment tool (Kabsch/Horn
+superposition over atoms with matching names; only standard Python required):
+
+```bash
+python3 tools/ligand_prepare.py align \
+  --reference XLC.pdb --mobile XLD.pdb --output XLD_aligned.pdb
+```
+
+RDKit (`rdMolAlign`) or Open Babel are free alternatives if you prefer a
+chemistry-aware (substructure-based) alignment; what matters is that the
+shared scaffold is tightly superimposed and that the reference ligand's
+coordinates are untouched so the complex stays consistent with the protein.
+Note the tool matches atoms by unique name + element: give the common core
+identical atom names in both PDB files before aligning.
+
+**Step 2 - ligand parameters.** LigParGen (free web server) remains the
+simplest option used by the tutorial: upload `XLC.pdb` and `XLD_aligned.pdb`
+with the correct total charge (0 in the tutorial) and download the RTF/TOP and
+PRM files. Fully local alternatives: CGenFF via the free SilcsBio
+`cgenff` binary or `charmm-gui.org` ligand modeler, or `parmed`/`antechamber`
+plus a conversion to CHARMM format. These scripts never invent atom types,
+charges, bonds, or dihedrals - validated parameters are your responsibility.
+
+**Step 3 - hybrid ligand and FEP flags (replaces the Feprepare web server).**
+Build the dual-topology PDB plus the `.fep` flag file locally:
+
+```bash
+python3 tools/ligand_prepare.py hybrid \
+  --ligand-a XLC.pdb --ligand-b XLD_aligned.pdb \
+  --output ligand_hybrid.pdb --fep-output ligand_hybrid.fep
+```
+
+This writes the B-factor column that `alchCol B` reads: `0.00` for common
+atoms, `-1.00` for atoms that disappear (reference-only), `1.00` for atoms
+that appear (mutation-only). You must still create the dual-topology PSF that
+pairs these coordinates with the two ligand topologies: adapt
+`tools/psfgen_ligand.tcl` (run with `vmd -dispdev text -e`) so that the
+topology files for both ligands are loaded and the hybrid segment is written,
+then solvate/ionize the solvent leg and the protein-complex leg with VMD
+(`solvate`, `autoionize`) or CHARMM-GUI. If your system defeats local assembly
+(membranes, unusual residues), CHARMM-GUI's RBFE workflow is the fallback, as
+noted above.
+
+**Steps 4-6 - NAMD inputs and simulation.** Nothing here required Feprepare:
+the repository already contains the four modified configuration files used by
+the tutorial (`*_nvt_equil_test.namd`, `*_npt_equil_test.namd`,
+`*_md_forward_test.namd`, `*_md_backward_test.namd` for the complex and
+solvent legs) together with `toppar_modified.zip` and `parameter_patch2.txt`.
+Copy them into your `complex/` and `solvent/` directories, update the
+`structure`/`coordinates`/`parameters` paths, the periodic cell vectors (from
+the solvated systems), and the step counts. The notebook
+`NAMD-FEP_local.ipynb` then performs the identical short test run
+(`namd2 nvt_equil_test.namd > nvt_test.log`, then NPT, forward, backward) for
+both legs; scale the step counts up for production. If you prefer
+Feprepare-style independent lambda windows, generate them from the template
+instead of running the single sweep file:
+
+```bash
+python3 tools/rbfe_workflow.py generate \
+  --template tools/independent_window.namd \
+  --output-dir windows/forward --windows 16
+python3 tools/rbfe_workflow.py command \
+  --namd /path/to/namd3 --config windows/forward/window_000.namd
+```
+
+For cluster submission, any scheduler works (the tutorial's PBS example, or
+Slurm); FileZilla is only a file-transfer convenience - `scp`/`rsync` do the
+same job.
+
+**Step 7 - analysis.** VMD's ParseFEP plugin (`Extensions > Analysis >
+Analyze FEP Simulation`) is free and works without Maestro/Feprepare: select
+the forward and backward `.fepout` files per leg, set the simulation
+temperature, and take `ddG_FEP = dG_complex - dG_solv`. See
+`T4L_RBFE/output_files/` for reference outputs and the expected BAR table
+format. Free non-VMD options include `alchemlyb` (parsing + BAR/MBAR in
+Python) or the bundled `Decomp_barchart.ipynb` notebook for per-residue
+decomposition plots. Finally apply the protonation-state correction:
+`ddG = ddG_FEP + (S2 - S1)`.
