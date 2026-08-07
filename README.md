@@ -52,3 +52,44 @@ Analysis and result of the solvent leg
 If you have access to google Colab, or any other open souced cloud platforms, with a NAMD installed, it is then possible for you to run the whole FEP process there instead of your laptop, with usually a faster performance in simulation speed.
 
  Pros and Cons, FEP is more accurate than docking, but it cost more time, and could only handle ligands with a similar scaffold that can be aligned.
+
+# Local workflow (no FepPrepare dependency)
+
+The supported direction for new projects is a hybrid local workflow:
+
+1. Prepare and inspect the protein and aligned ligands locally with VMD/`psfgen`.
+   `tools/psfgen_ligand.tcl` is a starting template, not a parameter generator.
+2. Supply validated ligand topology and parameters (for example, locally generated
+   CGenFF-compatible files). NAMD and VMD do not assign reliable small-molecule
+   parameters automatically.
+3. Generate independent windows from an existing NAMD FEP template:
+
+   ```bash
+   python3 tools/rbfe_workflow.py validate ligand.pdb ligand.str
+   python3 tools/rbfe_workflow.py generate \
+     --template complex_md_forward_test.namd \
+     --output-dir windows/forward --windows 16
+   ```
+
+   The template must contain `@ALCH_LAMBDA@` and `@ALCH_LAMBDA2@` markers
+   where the window-specific `alchLambda` and `alchLambda2` values belong.
+4. Run one window at a time, or schedule a small independent batch on a V100.
+   Four CPU workers and one CUDA device are the default:
+
+   ```bash
+   python3 tools/rbfe_workflow.py command \
+     --namd /opt/NAMD_3.0/namd3 --config windows/forward/window_000.namd
+   ```
+
+   The command is printed for review; the utility does not launch jobs or
+   require replica exchange.
+
+This removes FepPrepare and CHARMM-GUI from the normal orchestration path while
+retaining CHARMM-GUI as a fallback for membranes, unusual residues, or systems
+that cannot be assembled locally. FepPrepare source code is not assumed to be
+reusable; licensing must be verified before incorporating any code.
+
+Before migrating a production system, validate both solvent and complex legs:
+check topology completeness, forward/reverse agreement, replicate convergence,
+and consistent energies against the existing T4L example. The local workflow
+does not replace chemical validation of ligand parameters.
