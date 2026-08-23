@@ -1,0 +1,79 @@
+###################################################
+# SOLVENT leg -- nvt
+###################################################
+set temp               300.0
+paraTypeCharmm         on
+parameters              ../../toppar/par_all36m_prot.prm
+parameters              ../../toppar/par_all36_na.prm
+parameters              ../../toppar/par_all36_carb.prm
+parameters              ../../toppar/par_all36_lipid.prm
+parameters              ../../toppar/par_all36_cgenff.prm
+parameters              ../../toppar/par_water_ions_clean.prm
+parameters              ../hybrid/hybrid.prm
+
+exclude                scaled1-4
+1-4scaling             1.0
+
+structure              ionized.psf
+coordinates            ionized.pdb
+temperature            $temp
+
+outputenergies         500
+outputtiming           500
+outputpressure         500
+restartfreq            500
+XSTFreq                500
+dcdfreq                500
+outputname             nvt_equil
+restartname            nvt_equil
+binaryoutput           yes
+binaryrestart          yes
+
+langevin               on
+langevinTemp           $temp
+langevinDamping        1.0
+
+PME                    yes
+PMEGridSpacing         1.0
+
+cellBasisVector1       35.881 0.0 0.0
+cellBasisVector2       0.0 38.220 0.0
+cellBasisVector3       0.0 0.0 40.158
+cellOrigin             19.362 44.809 12.024
+wrapAll                on
+wrapWater              on
+
+stepspercycle          20
+switching              on
+switchdist             10.0
+cutoff                 12.0
+pairlistdist           14.0
+
+timestep               2.0
+rigidbonds             all
+rigidtolerance         0.000001
+rigiditerations        400
+nonbondedFreq          1
+fullElectFrequency     2
+
+ComMotion              no
+
+source                 ../fep.tcl
+alch                   on
+alchType               fep
+alchFile               ionized.fep
+alchCol                B
+alchOutFile            nvt_equil.fepout
+alchOutFreq            500
+alchVdwLambdaEnd       1.0
+alchElecLambdaStart    0.5
+alchVdWShiftCoeff      5.0
+alchDecouple           off
+alchEquilSteps         50000
+set numSteps           50000
+set numMinSteps        5000
+alchLambda             0.0
+alchLambda2            0.0
+minimize               $numMinSteps
+reinitvels             $temp
+run                    $numSteps

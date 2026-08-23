@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+
+# NAMD/VMD run artifacts (regenerable / transient)
+*.coor
+*.vel
+*.dcd
+*.xsc
+*.xst
+*.BAK
+*.old
+*.log
+
+# Solvated systems + generated PDB/PSF (regenerate via the scripts)
+ionized.psf
+ionized.pdb
+ionized.fep
+solvated.psf
+solvated.pdb
+protein_P*.pdb
+protein_seg*.pdb
+ligand.psf
+ligand.pdb
+complex.psf
+complex.pdb
