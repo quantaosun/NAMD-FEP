@@ -231,3 +231,76 @@ python3 -m fep_web.app --root . --port 8080 --token "$(openssl rand -hex 8)"
 The GPU check gates the Start button: it is disabled and the reason shown when
 the card has no room, so you cannot accidentally queue a job onto a contended
 GPU.
+
+---
+
+## 10. Exposing the UI — current state (2026-09-12, UNRESOLVED)
+
+Recorded so this is not re-derived. **The blocker is the network path off the
+box, not the app.** The app itself is verified working end to end.
+
+### What the box permits
+
+Measured, not assumed:
+
+| outbound | result |
+|---|---|
+| TCP **443** | ✅ works (GitHub, Cloudflare API, gh-proxy) |
+| TCP 22 (SSH) | ❌ blocked — no SSH tunnels (localhost.run, serveo) |
+| UDP 7844 | ❌ `operation not permitted` |
+| TCP 7844 | ❌ `i/o timeout` |
+
+**cloudflared cannot work here**: it uses port **7844 for both QUIC and
+HTTP/2**, so `--protocol http2` does not rescue it. The quick tunnel creates a
+hostname (`*.trycloudflare.com`) and then never connects.
+
+### What AI Studio supports
+
+`jupyter_server_proxy` is **not installed** in the WebIDE env
+(`/opt/conda/envs/webide/bin/python3.7`), so the usual `/proxy/<port>/` path
+does not exist. Installing it needs a WebIDE restart.
+
+AI Studio's Codelab ships **`codelab_gradio_extension`** and
+**`codelab_streamlit_extension`** (confirmed in `~/.codelab-jupyter.log`) — the
+deploy button supports **Gradio and Streamlit only, not Flask**. The Gradio
+extension discovers files ending in **`.gradio.py`**
+(`codelab_gradio_extension/handlers.py`, `util.py`).
+
+Its deploy handler takes a `file` argument resolved against
+`jupyter_root_dir` (= `/home/aistudio`) — read from
+`codelab_gradio_extension/handlers.py:check_file`.
+
+⚠️ The same extension contains a **`DeployNotAvailableHandler`**, so deployment
+is gated by project type. Baidu's docs say it requires **BML Codelab with
+PaddlePaddle 2.5.2+**. Whether this project qualifies is **unconfirmed** — it is
+the open question.
+
+### What exists now
+
+| file | purpose |
+|---|---|
+| `fep_ui.gradio.py` (repo root) | **the Gradio app the deploy button wants** |
+| `/home/aistudio/fep_ui.gradio.py` | symlink to the above, so it is visible from the project root |
+| `serve_ui.py` (repo root) | Flask launcher, local use only — **not** deployable |
+| `fep_web/app.py` | the Flask UI (prefix-tolerant) |
+
+`fep_ui.gradio.py` uses only the API common to Gradio 3.x and 5.x and is
+verified launching under **both** (3.19.1 on py3.7, 5.27.1 on py3.10), because
+which interpreter the deploy picks is not knowable in advance.
+
+### To resume
+
+1. Open `fep_ui.gradio.py` in the AI Studio editor, click **部署**, and note
+   whether a file list appears and what it contains.
+2. If the deploy button does not exist → the project type is wrong; use ngrok
+   (dials out on 443, needs a free authtoken) or install `jupyter-server-proxy`
+   (WebIDE restart required).
+3. If it deploys → the URL is `<project>/api_serving/8080`; the app already
+   tolerates that prefix.
+
+### Local fallback (always works, on the box)
+
+```bash
+cd /home/aistudio/work/NAMD-FEP
+python3 -m fep_web.app --root . --port 8080 --host 0.0.0.0 --token <secret>
+```
