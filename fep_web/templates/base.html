@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}NAMD RBFE{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <h1><a href="{{ url_for('index') }}">NAMD RBFE</a></h1>
+    <span class="sub">job monitor</span>
+    <span style="flex:1"></span>
+    <button type="button" id="theme-toggle" title="Toggle light/dark">◐ theme</button>
+  </div>
+</header>
+
+<div class="wrap">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<script>
+// Theme toggle. Written to data-theme so it beats the OS setting both ways
+// (see the palette's dual-scope rule); the CSS carries matching values.
+(function () {
+  var root = document.documentElement;
+  var saved = localStorage.getItem("theme");
+  if (saved) root.setAttribute("data-theme", saved);
+  document.getElementById("theme-toggle").addEventListener("click", function () {
+    var now = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", now);
+    localStorage.setItem("theme", now);
+  });
+})();
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

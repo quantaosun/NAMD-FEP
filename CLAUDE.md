@@ -27,6 +27,19 @@ Calculates ΔΔG of binding for small molecule ligands against a protein target.
   - `jobs.py` — `submit` runs the GPU preflight first, refuses if a job is
     already live, and launches detached (`start_new_session=True`) so the job
     outlives the UI session.
+  - `results.py` — runs the system's own `analyze_fep.py bar … --json` and parses
+    the JSON. Nothing scrapes human-readable stdout; `analyze_fep.py` gained a
+    `--json` flag for this.
+  - `app.py` — the Flask UI. Session-scoped by design (you start it when the GPU
+    box is up), so there is no user database and no permanent-URL handling.
+    `python3 -m fep_web.app --root . --port 8080 --host 0.0.0.0 [--token X]`.
+    Binding 0.0.0.0 exposes it; `--token` (or `FEP_WEB_TOKEN`) is the only auth,
+    and it is **off by default**. System names are validated against the
+    discovered set rather than being used as paths, so `/system/../..` 404s.
+  - `templates/`, `static/style.css` — server-rendered Jinja, no JS build step.
+    Uses the reference data-viz palette; status is always a coloured dot **plus
+    a text label**, never colour alone (the status palette is deliberately
+    sub-3:1 for some roles on the light surface).
 - `tests/test_fep_web.py` (repo root, 2026-09-12) — 28 tests, no GPU and no NAMD
   needed. GPU cases use a **real fake `nvidia-smi` executable** so the subprocess
   path is exercised; process cases inject a runner/Popen.

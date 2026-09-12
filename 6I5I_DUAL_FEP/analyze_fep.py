@@ -36,6 +36,7 @@ Temperature defaults to 300 K (match `set temp` in the .namd configs).
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import re
 import sys
@@ -212,6 +213,9 @@ def main() -> int:
         p.add_argument("--no-trim", action="store_true",
                        help="keep every sample, including per-window "
                             "equilibration (pre-2026-09-12 behaviour; biased)")
+        p.add_argument("--json", action="store_true",
+                       help="emit machine-readable JSON instead of a table "
+                            "(used by fep_web; nothing here scrapes stdout text)")
 
     e = sub.add_parser("exp", help="one-sided Zwanzig from forward data")
     e.add_argument("files", nargs="+", type=Path,
@@ -228,6 +232,17 @@ def main() -> int:
 
     if a.cmd == "exp":
         results = [exp_leg(p, a.temp, trim) for p in a.files]
+        if a.json:
+            out = {"estimator": "exp", "temp": a.temp, "trim": trim,
+                   "legs": [{"path": r["path"], "total_dG": r["total_dG"],
+                             "windows": [{"lambda1": w[0], "lambda2": w[1],
+                                          "dG": w[2], "n": w[3]}
+                                         for w in r["windows"]]}
+                            for r in results]}
+            if len(results) == 2:
+                out["ddG"] = results[0]["total_dG"] - results[1]["total_dG"]
+            print(json.dumps(out, indent=2))
+            return 0
         if len(results) == 1:
             labels = [f"{results[0]['path'].rsplit('/', 1)[-1]} (EXP)"]
         else:
@@ -245,6 +260,17 @@ def main() -> int:
     else:
         cplx = bar_leg(a.files[0], a.files[1], a.temp, trim)
         solv = bar_leg(a.files[2], a.files[3], a.temp, trim)
+        if a.json:
+            print(json.dumps({
+                "estimator": "bar", "temp": a.temp, "trim": trim,
+                "dG_complex": cplx["total_dG"], "dG_solvent": solv["total_dG"],
+                "ddG": cplx["total_dG"] - solv["total_dG"],
+                "complex_windows": [{"lambda1": w[0], "lambda2": w[1], "dG": w[2]}
+                                    for w in cplx["windows"]],
+                "solvent_windows": [{"lambda1": w[0], "lambda2": w[1], "dG": w[2]}
+                                    for w in solv["windows"]],
+            }, indent=2))
+            return 0
         _print_leg("Complex (BAR)", cplx, exp=False)
         _print_leg("Solvent (BAR)", solv, exp=False)
         ddg = cplx["total_dG"] - solv["total_dG"]

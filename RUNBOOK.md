@@ -204,3 +204,30 @@ two cases a naive `.done`-marker check gets wrong — see `CLAUDE.md`.
 ```bash
 python3 -m unittest discover -s tests    # 28 tests, no GPU or NAMD required
 ```
+
+### 9.1 The web UI
+
+```bash
+cd /home/aistudio/work/NAMD-FEP
+python3 -m fep_web.app --root . --port 8080 --host 0.0.0.0
+```
+
+Then open `http://<host>:8080`. It lists every directory containing `fep_run.py`,
+shows GPU readiness, per-stage progress, a Start/Cancel control, the controller
+log (auto-refreshing while a job runs), and a **Compute ΔΔG** button that runs
+the BAR analysis and reports `ddG`, `dG_complex` and `dG_solvent`.
+
+**Session-scoped by design** — start it when the GPU box is up; it does not need
+to survive a restart, because the *job* does (detached launch + `.done` markers).
+
+⚠️ **There is no authentication unless you set one.** Binding `0.0.0.0` exposes
+it to whatever can reach the port. If you reach it through a proxy:
+
+```bash
+python3 -m fep_web.app --root . --port 8080 --token "$(openssl rand -hex 8)"
+# then: http://<host>:8080/?token=<that>   (or send X-FEP-Token)
+```
+
+The GPU check gates the Start button: it is disabled and the reason shown when
+the card has no room, so you cannot accidentally queue a job onto a contended
+GPU.

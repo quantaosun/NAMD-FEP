@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}{{ name }} — NAMD RBFE{% endblock %}
+
+{% block content %}
+
+<h2 style="display:flex;align-items:baseline;gap:.75rem">
+  {{ name }}
+  <span style="flex:1"></span>
+  <span class="sub" style="font-size:.8rem;color:var(--ink-muted)">{{ path }}</span>
+</h2>
+
+{# ---- controls ---- #}
+<div class="card">
+  <div class="actions">
+    <form method="post" action="{{ url_for('system_submit', name=name) }}">
+      <button class="primary" type="submit"
+        {% if not gpu.ok %}disabled title="{{ gpu.reason }}"{% endif %}>
+        {% if st.running %}Resume / restart{% else %}Start job{% endif %}
+      </button>
+    </form>
+    <form method="post" action="{{ url_for('system_cancel', name=name) }}">
+      <button class="danger" type="submit" {% if not st.running %}disabled{% endif %}>Cancel</button>
+    </form>
+    <span style="flex:1"></span>
+    <span id="live-state">
+      {% if st.running %}{{ m.status("warning", "running") }}
+      {% elif st.complete %}{{ m.status("good", "complete") }}
+      {% else %}{{ m.status("idle", "idle") }}{% endif %}
+    </span>
+  </div>
+  {% if not gpu.ok %}
+    <p class="hint">Start is disabled: {{ gpu.reason }}</p>
+  {% endif %}
+  {% if st.controller_pid %}
+    <p class="hint">controller pid {{ st.controller_pid }}{% if st.namd_pids %}, namd3 pid{{ 's' if st.namd_pids|length > 1 }} {{ st.namd_pids|join(', ') }}{% endif %}</p>
+  {% endif %}
+</div>
+
+{# ---- stages ---- #}
+{% for leg, ls in st.legs.items() %}
+<div class="card">
+  <div class="leg-title">
+    <h3>{{ leg }}</h3>
+    <span class="meta">
+      {% if ls.complete %}all stages complete{% else %}{{ ls.stages.values() | selectattr('complete') | list | length }}/{{ ls.stages | length }} stages complete{% endif %}
+    </span>
+  </div>
+
+  {% for sname, s in ls.stages.items() %}
+  <div class="stage" id="stage-{{ leg }}-{{ sname }}">
+    <div class="name">{{ sname }}</div>
+    <div class="stage-meter">{{ m.meter(s.fraction) }}</div>
+    <div class="count">{{ s.done }}/{{ s.total }} <span class="stage-state">{{ m.stage_state(s) }}</span></div>
+    {% if s.note %}<div class="note">{{ s.note }}</div>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+{# ---- result ---- #}
+<h2>Result</h2>
+<div class="card">
+  {% if readiness.ready %}
+    <div class="actions">
+      <button type="button" id="run-analysis">Compute ΔΔG</button>
+      <span class="hint" id="analysis-status" style="margin:0"></span>
+    </div>
+    <div id="analysis-output" style="margin-top:.85rem"></div>
+  {% else %}
+    <div class="empty">{{ readiness.reason }}</div>
+    {% if readiness.missing %}
+      <p class="hint">Missing:
+        {% for f in readiness.missing %}<code>{{ f }}</code>{% if not loop.last %}, {% endif %}{% endfor %}.
+        Assemble with <code>python3 fep_run.py assemble &lt;leg&gt; &lt;stage&gt;</code>.
+      </p>
+    {% endif %}
+  {% endif %}
+</div>
+
+{# ---- log ---- #}
+<h2>Controller log</h2>
+<pre class="log" id="log">{{ log_lines | join('\n') }}</pre>
+<p class="hint">Auto-refreshes while a job is running.</p>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const NAME = {{ name | tojson }};
+const RUNNING = {{ st.running | tojson }};
+
+function stateWord(s) {
+  if (s.complete) return ["good", "complete"];
+  if (s.running)  return ["warning", "running"];
+  if (s.done > 0) return ["idle", "partial"];
+  return ["idle", "not started"];
+}
+
+function paint(stage, s) {
+  const fill = stage.querySelector(".fill");
+  if (fill) fill.style.width = (s.fraction * 100).toFixed(1) + "%";
+  const cnt = stage.querySelector(".count");
+  if (cnt) cnt.firstChild.textContent = s.done + "/" + s.total + " ";
+  const holder = stage.querySelector(".stage-state");
+  if (holder) {
+    const [word, label] = stateWord(s);
+    holder.innerHTML = '<span class="status" data-state="' + word +
+      '"><span class="dot"></span><span class="text">' + label + "</span></span>";
+  }
+}
+
+async function refresh() {
+  try {
+    const st = await (await fetch(`/api/system/${NAME}`)).json();
+    for (const [leg, stages] of Object.entries(st.legs)) {
+      for (const [sname, s] of Object.entries(stages)) {
+        const el = document.getElementById(`stage-${leg}-${sname}`);
+        if (el) paint(el, s);
+      }
+    }
+    const log = await (await fetch(`/api/system/${NAME}/log?tail=200`)).json();
+    const pre = document.getElementById("log");
+    const atBottom = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 20;
+    pre.textContent = log.lines.join("\n");
+    if (atBottom) pre.scrollTop = pre.scrollHeight;
+  } catch (e) { /* transient; try again next tick */ }
+}
+
+// Poll only while something is moving -- an idle page should not chatter.
+if (RUNNING) setInterval(refresh, 5000);
+
+const btn = document.getElementById("run-analysis");
+if (btn) {
+  btn.addEventListener("click", async function () {
+    const status = document.getElementById("analysis-status");
+    const out = document.getElementById("analysis-output");
+    btn.disabled = true;
+    status.textContent = "running BAR over both legs…";
+    try {
+      const r = await fetch(`/system/${NAME}/result`);
+      const d = await r.json();
+      if (d.error) { status.textContent = ""; out.textContent = d.error; }
+      else {
+        status.textContent = "";
+        out.innerHTML =
+          '<div class="tiles">' +
+          tile("ΔΔG", d.ddG.toFixed(3) + " kcal/mol", "complex − solvent") +
+          tile("dG complex", d.dG_complex.toFixed(3) + " kcal/mol", "0 → 1") +
+          tile("dG solvent", d.dG_solvent.toFixed(3) + " kcal/mol", "0 → 1") +
+          "</div>" +
+          '<p class="hint">Per-window equilibration samples are discarded automatically. ' +
+          'Run <code>audit_fep.py</code> for error bars and convergence checks.</p>';
+      }
+    } catch (e) { status.textContent = ""; out.textContent = "request failed: " + e; }
+    btn.disabled = false;
+  });
+}
+function tile(label, value, note) {
+  return '<div class="tile"><div class="label">' + label + '</div><div class="value">' +
+    value + '</div><div class="note">' + note + "</div></div>";
+}
+</script>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}NAMD RBFE — systems{% endblock %}
+
+{% block content %}
+
+{# ---- GPU stat tiles: the number is the chart, so these are tiles, not a plot ---- #}
+<h2>GPU</h2>
+<div class="tiles">
+  <div class="tile">
+    <div class="label">Launch check</div>
+    <div class="value">
+      {% if gpu.ok %}<span class="status" data-state="good"><span class="dot"></span><span class="text">Ready</span></span>
+      {% else %}<span class="status" data-state="critical"><span class="dot"></span><span class="text">Blocked</span></span>{% endif %}
+    </div>
+    <div class="note">{{ gpu.reason }}</div>
+  </div>
+  {% for d in gpu.devices %}
+  <div class="tile">
+    <div class="label">Device {{ d.index }}</div>
+    <div class="value">{{ d.name }}</div>
+    <div class="note">{{ d.free_mib | round | int }} MiB free of {{ d.total_mib | round | int }} · CC {{ d.compute_cap }}</div>
+  </div>
+  {% endfor %}
+  {% if not gpu.devices %}
+  <div class="tile">
+    <div class="label">Devices</div>
+    <div class="value">none</div>
+    <div class="note">GPU-resident NAMD cannot run here.</div>
+  </div>
+  {% endif %}
+</div>
+<p class="hint">
+  The check looks at <strong>free</strong> memory, not just presence — this card is shared,
+  so a job launched while another process holds memory will stall or fail.
+</p>
+
+{# ---- systems ---- #}
+<h2>Systems</h2>
+{% if not rows %}
+  <div class="card empty">
+    No prepared systems found. A system is a directory containing <code>fep_run.py</code>.
+  </div>
+{% else %}
+<div class="card" style="padding:.4rem 1.15rem">
+  <table>
+    <thead>
+      <tr>
+        <th>System</th>
+        <th>State</th>
+        <th style="width:30%">Progress</th>
+        <th class="num">Stages</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in rows %}
+      <tr>
+        <td><a class="row-link" href="{{ url_for('system_detail', name=row.name) }}">{{ row.name }}</a></td>
+        <td>
+          {% if row.state.running %}{{ m.status("warning", "running") }}
+          {% elif row.state.complete %}{{ m.status("good", "complete") }}
+          {% elif row.state.error %}{{ m.status("critical", "error") }}
+          {% else %}{{ m.status("idle", "idle") }}{% endif %}
+        </td>
+        <td>{{ m.meter(row.fraction) }}</td>
+        <td class="num">{{ row.done }}/{{ row.total }}</td>
+        <td><a class="btn" href="{{ url_for('system_detail', name=row.name) }}">open</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% endblock %}
