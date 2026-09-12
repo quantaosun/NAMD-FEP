@@ -5,6 +5,11 @@ A tutorial repo for Relative Binding Free Energy (RBFE) calculations using NAMD.
 Calculates ΔΔG of binding for small molecule ligands against a protein target.
 
 ### Docs / files generated (register every new file here)
+- `RUNBOOK.md` (repo root, 2026-09-12) — **the operational entry point.** Repo map
+  (current vs historical), the one command to run a job, the full pipeline order,
+  analysis commands, the traps that have already bitten, GPU rules, and why
+  `fep_pipeline/` is marked broken. Start here; `NAMD_RBFE_Guide_zh.md` is the
+  Chinese equivalent.
 - `NAMD_RBFE_Guide_zh.md` (repo root, 2026-09-06) — single combined Chinese guide:
   why physics-based RBFE stays the gold standard vs AI · Baidu AI Studio env (NAMD
   3.0.3 build + per-session `setup.sh`) · 6I5I manual per-λ-window run workflow.
