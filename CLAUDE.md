@@ -41,7 +41,16 @@ Calculates ΔΔG of binding for small molecule ligands against a protein target.
     them — the 6I5I `protein.pdb` that produced the published result has **zero**
     hydrogens, and an earlier version of this validator wrongly rejected it.
     Ligand hydrogens *are* required (all-atom input is a contract term).
-  - `../serve_ui.py` (repo root) — **the AI Studio deployment entry point.**
+  - `../fep_ui.gradio.py` (repo root) — **the file AI Studio's 部署 button
+    actually consumes.** The platform's Codelab has `codelab_gradio_extension`
+    and `codelab_streamlit_extension` (confirmed in `.codelab-jupyter.log`), and
+    the Gradio extension discovers files ending in **`.gradio.py`**. Flask is
+    NOT deployable this way — hence a Gradio front-end over the same `fep_web`
+    backend. Uses only the API subset common to Gradio 3.x and 5.x (no
+    `gr.Timer`/`every=`), because it may run under either interpreter: verified
+    launching under **both** 3.19.1 (webide, py3.7) and 5.27.1 (py3.10).
+  - `../serve_ui.py` (repo root) — a Flask launcher, kept for local use. It is
+    **not** what the AI Studio deploy button consumes (see above).
     AI Studio's model is "write service code in a Python file in the project,
     then click 部署 at the top" — it does not pick up a server started from a
     shell. This file is what the deploy button consumes: it exposes the WSGI
