@@ -5,6 +5,32 @@ A tutorial repo for Relative Binding Free Energy (RBFE) calculations using NAMD.
 Calculates ΔΔG of binding for small molecule ligands against a protein target.
 
 ### Docs / files generated (register every new file here)
+- `fep_web/` (repo root, 2026-09-12) — host-agnostic job-control layer, the
+  foundation for the planned Flask UI. **Deliberately knows nothing about Flask,
+  HTTP, or where it runs**, so it can be tested headlessly and later split onto a
+  separate host. Interface: `status(system)`, `submit(system)`, `cancel(system)`,
+  `logs(system, name, tail)`, `preflight()`. It *wraps* the proven scripts
+  (`respawn_controller.sh` → `run_checkpointed.sh` → `fep_run.py`) rather than
+  reimplementing them, with `.done` markers as the source of truth.
+  - `gpu.py` — GPU preflight. Checks **free** memory, not just presence: this
+    V100 is shared, and two other processes were holding ~4.3 GB during the
+    2026-09-12 audit. Threshold `DEFAULT_REQUIRED_MIB = 1500` (NAMD peaks at
+    ~590 MiB). `smi=` and the runner are injectable for testing.
+  - `state.py` — reads job state off disk. Handles two cases a marker-only check
+    gets **wrong**, both real here: (1) `complex/md_forward` w00–w05 were
+    salvaged from the crashed pre-controller single run and have *no* markers, so
+    markers alone report 9/15 for a finished leg — it also counts windows whose
+    boundary step appears in `<stage>.fepout`; (2) `complex/nvt_equil` /
+    `npt_equil` finished under the original `run_all.sh`, which wrote no markers
+    — detected from a present `.coor` **and** a log that reached NAMD's clean
+    `End of program`.
+  - `jobs.py` — `submit` runs the GPU preflight first, refuses if a job is
+    already live, and launches detached (`start_new_session=True`) so the job
+    outlives the UI session.
+- `tests/test_fep_web.py` (repo root, 2026-09-12) — 28 tests, no GPU and no NAMD
+  needed. GPU cases use a **real fake `nvidia-smi` executable** so the subprocess
+  path is exercised; process cases inject a runner/Popen.
+  Run: `python3 -m unittest discover -s tests`.
 - `RUNBOOK.md` (repo root, 2026-09-12) — **the operational entry point.** Repo map
   (current vs historical), the one command to run a job, the full pipeline order,
   analysis commands, the traps that have already bitten, GPU rules, and why

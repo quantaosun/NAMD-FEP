@@ -173,3 +173,34 @@ end-to-end** (no output, no tests, no history). Three independent breaks in `run
 Salvageable: `alignment.py` (pure-stdlib Kabsch + B-factor marking) and the
 `namd_config.py` templates (which still carry the restart-chain `temperature` bug).
 Its `analysis.py` was deleted for returning wrong numbers.
+
+---
+
+## 9. `fep_web/` — job control as a library (foundation for the UI)
+
+A host-agnostic layer over the scripts above, so the same logic can back a CLI,
+a Flask app, or the existing shell entry points. It knows nothing about HTTP.
+
+```python
+from pathlib import Path
+from fep_web import preflight, status, submit, cancel, logs
+
+preflight().ok                     # is there a GPU with room RIGHT NOW?
+st = status(Path("6I5I_DUAL_FEP")) # per-leg/per-stage progress, running PIDs
+submit(Path("6I5I_DUAL_FEP"))      # GPU-preflights, then launches detached
+cancel(Path("6I5I_DUAL_FEP"))      # SIGTERM controller + namd3
+logs(Path("6I5I_DUAL_FEP"), tail=50)
+```
+
+`submit()` refuses if a job is already live, and the launch is detached
+(`start_new_session=True`) so it survives a closed browser/session — which is
+what makes the multi-day, several-hours-a-day pattern work.
+
+**Why it exists rather than just calling the shell scripts:** the scripts assume
+a free GPU. This V100 is *shared*, so `preflight()` checks free memory against a
+1500 MiB threshold (NAMD peaks at ~590 MiB). It also reads job state correctly in
+two cases a naive `.done`-marker check gets wrong — see `CLAUDE.md`.
+
+```bash
+python3 -m unittest discover -s tests    # 28 tests, no GPU or NAMD required
+```

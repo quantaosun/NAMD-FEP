@@ -263,3 +263,41 @@ endpoints do not close. Re-running it on the 6I5I inputs now gives λ=0 +0.00000
 production run actually used, so regenerating it would desync the repo from the number in
 §7.1. If you ever re-run 6I5I, regenerate first and note that the new result will differ
 slightly from −0.106 for this reason as well as for sampling.
+
+### 7.6 The ligand is GAFF, wearing CHARMM type names (force-field mixing)
+
+**No Feprepare was used anywhere in this pipeline** — verified: the only matches for
+`feprepare|ligpargen|maestro|charmm-gui` under `6I5I_DUAL_FEP/` are prose stating they were
+*not* used. The ligand inputs came from **acpype** (`acpype v2023.10.27` → antechamber), which
+emitted `ref_CHARMM.rtf` / `ref_CHARMM.prm`.
+
+Despite the filename, those are **GAFF parameters** — the nonbonded values are numerically
+identical to GAFF's, not CGenFF's:
+
+| type | `inputs/ref.prm` | GAFF | CGenFF equivalent |
+|---|---|---|---|
+| `ca` | 0.0860 / 1.9080 | **0.0860 / 1.9080** | `CG2R61` 0.0700 / 1.9924 |
+| `c3` | 0.1094 / 1.9080 | **0.1094 / 1.9080** | — |
+| `nc`/`na`/`nb` | 0.1700 / 1.8240 | **0.1700 / 1.8240** | 0.2000 / 1.8500 |
+| `os` | 0.1700 / 1.6837 | **0.1700 / 1.6837** | 0.1521 / 1.7700 |
+
+acpype renamed the GAFF types to legacy CHARMM names but kept the GAFF values. Those legacy
+names **do not exist in any loaded parameter file** — `par_all36m_prot.prm`,
+`par_all36_cgenff.prm` and `par_all22_prot.prm` have zero legacy-type nonbonded lines (this
+repo's CGenFF uses the modern `CG2R61`/`CG331`/`NG1T1` naming). Every ligand parameter
+therefore resolves from `inputs/ref.prm` + `hybrid.prm` alone.
+
+**Consequence: the ligand runs on GAFF while the protein, water and ions run on CHARMM36.**
+CGenFF exists specifically to be paired with CHARMM36; GAFF/CGenFF mixing is a known accuracy
+concern. This is a *systematic* error, and like the others it largely cancels in the
+complex − solvent difference — which is why ΔΔG ≈ 0 can survive it while the absolute leg
+values (+3.9 kcal/mol each) deserve more caution than they have been given.
+
+**Scope of this check:** the *nonbonded* terms were compared digit-for-digit and match GAFF
+exactly. The *bonded* terms were not fully traced — e.g. `ca ca 461.10 1.398` matches neither
+GAFF nor legacy CGenFF cleanly, so acpype may have applied a mixed mapping. Treat the bonded
+assignment as unverified.
+
+**If you want a CHARMM-consistent ligand** you need CGenFF atom types and charges — via the
+CGenFF program / ParamChem, or CHARMM-GUI's Ligand Reader — and then the hybrid must be
+rebuilt from those. That is a preparation change, not an analysis fix.
