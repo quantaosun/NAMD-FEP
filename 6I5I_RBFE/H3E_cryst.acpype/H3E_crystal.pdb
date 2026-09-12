@@ -1,0 +1,60 @@
+REMARK crystal-pose H3E
+HETATM    1   C1 UNL Z   1      20.579  42.813  10.767  1.00  0.00           C
+HETATM    2   C2 UNL Z   1      20.925  42.053   9.652  1.00  0.00           C
+HETATM    3   C3 UNL Z   1      20.554  42.499   8.392  1.00  0.00           C
+HETATM    4   N4 UNL Z   1      21.735  41.218  13.882  1.00  0.00           N
+HETATM    5   C5 UNL Z   1      19.864  43.693   8.289  1.00  0.00           C
+HETATM    6   C6 UNL Z   1      19.548  44.385   9.461  1.00  0.00           C
+HETATM    7   N7 UNL Z   1      16.685  47.856  11.029  1.00  0.00           N
+HETATM    8   C8 UNL Z   1      18.740  45.506   9.092  1.00  0.00           C
+HETATM    9   C9 UNL Z   1      18.686  45.430   7.740  1.00  0.00           C
+HETATM   10  C10 UNL Z   1      18.161  46.467  10.022  1.00  0.00           C
+HETATM   11  C11 UNL Z   1      16.969  47.216   9.913  1.00  0.00           C
+HETATM   12  N12 UNL Z   1      17.705  47.541  11.867  1.00  0.00           N
+HETATM   13  C13 UNL Z   1      17.761  48.107  13.212  1.00  0.00           C
+HETATM   14  C14 UNL Z   1      18.002  47.071  14.287  1.00  0.00           C
+HETATM   15  C15 UNL Z   1      17.334  45.854  14.281  1.00  0.00           C
+HETATM   16  N16 UNL Z   1      19.901  43.971  10.681  1.00  0.00           N
+HETATM   17  C17 UNL Z   1      20.708  42.442  15.717  1.00  0.00           C
+HETATM   18  N18 UNL Z   1      20.949  42.241  14.300  1.00  0.00           N
+HETATM   19  C19 UNL Z   1      21.704  41.311  12.572  1.00  0.00           C
+HETATM   20  C20 UNL Z   1      20.917  42.393  12.134  1.00  0.00           C
+HETATM   21  C21 UNL Z   1      20.458  42.963  13.286  1.00  0.00           C
+HETATM   22  O22 UNL Z   1      19.361  44.362   7.211  1.00  0.00           O
+HETATM   23  C23 UNL Z   1      18.591  46.708  11.309  1.00  0.00           C
+HETATM   24  C24 UNL Z   1      18.835  47.353  15.355  1.00  0.00           C
+HETATM   25  C25 UNL Z   1      18.947  46.468  16.422  1.00  0.00           C
+HETATM   26  C26 UNL Z   1      18.260  45.281  16.409  1.00  0.00           C
+HETATM   27  C27 UNL Z   1      17.481  44.960  15.324  1.00  0.00           C
+CONECT    2    1
+CONECT    3    2
+CONECT    5    3
+CONECT    6    5
+CONECT    8    6
+CONECT    9    8
+CONECT   10    8
+CONECT   11   10
+CONECT   11    7
+CONECT   12    7
+CONECT   13   12
+CONECT   14   13
+CONECT   15   14
+CONECT   16    1
+CONECT   16    6
+CONECT   18   17
+CONECT   18    4
+CONECT   19    4
+CONECT   20    1
+CONECT   20   19
+CONECT   21   20
+CONECT   21   18
+CONECT   22    9
+CONECT   22    5
+CONECT   23   10
+CONECT   23   12
+CONECT   24   14
+CONECT   25   24
+CONECT   26   25
+CONECT   27   15
+CONECT   27   26
+END

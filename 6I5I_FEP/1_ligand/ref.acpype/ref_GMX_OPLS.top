@@ -1,0 +1,19 @@
+; ref_GMX_OPLS.top created by acpype (v: 2023.10.27) on Sun Aug 23 14:33:45 2026
+
+; Include forcefield parameters
+#include "ffoplsaa.itp"
+
+; Include ref_GMX.itp topology
+#include "ref_GMX.itp"
+
+; Ligand position restraints
+#ifdef POSRES_LIG
+#include "posre_ref.itp"
+#endif
+
+[ system ]
+ ref
+
+[ molecules ]
+; Compound        nmols
+ ref              1     

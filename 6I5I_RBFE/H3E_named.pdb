@@ -1,0 +1,60 @@
+REMARK   ligand
+HETATM    1 C21A LIG A 501      -5.688   3.210   0.610  1.00  0.00           C
+HETATM    2   N1 LIG A 501      -5.487   1.876   0.102  1.00  0.00           N
+HETATM    3   C1 LIG A 501      -4.325   1.166   0.100  1.00  0.00           C
+HETATM    4   C2 LIG A 501      -4.608  -0.055  -0.485  1.00  0.00           C
+HETATM    5   C3 LIG A 501      -5.984   0.038  -0.796  1.00  0.00           C
+HETATM    6   N2 LIG A 501      -6.522   1.209  -0.441  1.00  0.00           N
+HETATM    7   C4 LIG A 501      -3.636  -1.122  -0.685  1.00  0.00           C
+HETATM    8   C5 LIG A 501      -4.019  -2.328  -1.283  1.00  0.00           C
+HETATM    9   C6 LIG A 501      -3.083  -3.348  -1.473  1.00  0.00           C
+HETATM   10   C7 LIG A 501      -1.803  -3.057  -1.030  1.00  0.00           C
+HETATM   11   C8 LIG A 501      -1.472  -1.842  -0.443  1.00  0.00           C
+HETATM   12   N3 LIG A 501      -2.378  -0.849  -0.256  1.00  0.00           N
+HETATM   13   C9 LIG A 501      -0.089  -1.927  -0.131  1.00  0.00           C
+HETATM   14  C10 LIG A 501       0.320  -3.177  -0.548  1.00  0.00           C
+HETATM   15   O1 LIG A 501      -0.716  -3.871  -1.096  1.00  0.00           O
+HETATM   16  C11 LIG A 501       0.727  -0.901   0.499  1.00  0.00           C
+HETATM   17  C12 LIG A 501       0.314   0.387   0.894  1.00  0.00           C
+HETATM   18   N4 LIG A 501       1.305   1.095   1.447  1.00  0.00           N
+HETATM   19   N5 LIG A 501       2.363   0.257   1.389  1.00  0.00           N
+HETATM   20  C13 LIG A 501       2.058  -0.961   0.843  1.00  0.00           C
+HETATM   21  C14 LIG A 501       3.652   0.672   1.930  1.00  0.00           C
+HETATM   22  C15 LIG A 501       4.682   0.866   0.844  1.00  0.00           C
+HETATM   23  C16 LIG A 501       4.527   1.884  -0.110  1.00  0.00           C
+HETATM   24  C17 LIG A 501       5.480   2.067  -1.112  1.00  0.00           C
+HETATM   25  C18 LIG A 501       6.599   1.238  -1.170  1.00  0.00           C
+HETATM   26  C19 LIG A 501       6.766   0.226  -0.227  1.00  0.00           C
+HETATM   27  C20 LIG A 501       5.814   0.041   0.777  1.00  0.00           C
+CONECT    1    2
+CONECT    2    3
+CONECT    3    4
+CONECT    4    5
+CONECT    5    6
+CONECT    4    7
+CONECT    7    8
+CONECT    8    9
+CONECT    9   10
+CONECT   10   11
+CONECT   11   12
+CONECT   11   13
+CONECT   13   14
+CONECT   14   15
+CONECT   13   16
+CONECT   16   17
+CONECT   17   18
+CONECT   18   19
+CONECT   19   20
+CONECT   19   21
+CONECT   21   22
+CONECT   22   23
+CONECT   23   24
+CONECT   24   25
+CONECT   25   26
+CONECT   26   27
+CONECT    6    2
+CONECT   12    7
+CONECT   15   10
+CONECT   20   16
+CONECT   27   22
+END

@@ -95,7 +95,12 @@ exclude                scaled1-4
 
 structure              ionized.psf
 coordinates            ionized.pdb
-temperature            $temp
+
+# NOTE: do NOT set `temperature` in this common header. NAMD errors with
+# "Cannot specify both an initial temperature and a velocity file" whenever a
+# stage that reads `binvelocities` (npt/forward/backward) also sets an initial
+# temperature. Only `nvt` seeds velocities (via `reinitvels`); it sets
+# `temperature` in its own block below.
 
 outputenergies         {steps['outfreq']}
 outputtiming           {steps['outfreq']}
@@ -137,6 +142,12 @@ fullElectFrequency     2
 
 ComMotion              no
 
+# GPU-resident integration -- requires the --with-single-node-cuda build at
+# /home/aistudio/NAMD_3.0.3_Source/Linux-x86_64-g++.gpuresident/namd3
+# (~21x faster). Run it with +p1, NOT +p8: throughput scales inversely with
+# PE count in this mode. See CLAUDE.md.
+GPUresident            on
+
 source                 ../fep.tcl
 alch                   on
 alchType               fep
@@ -153,6 +164,7 @@ alchEquilSteps         {steps['alch_equil']}
 
     if kind == "nvt":
         return common + f"""\
+temperature            $temp
 set numSteps           {steps['nvt']}
 set numMinSteps        {steps['min']}
 alchLambda             0.0

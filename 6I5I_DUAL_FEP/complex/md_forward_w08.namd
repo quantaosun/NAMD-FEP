@@ -1,0 +1,96 @@
+###################################################
+# COMPLEX leg -- forward
+###################################################
+set temp               300.0
+paraTypeCharmm         on
+parameters              ../../toppar/par_all36m_prot.prm
+parameters              ../../toppar/par_all36_na.prm
+parameters              ../../toppar/par_all36_carb.prm
+parameters              ../../toppar/par_all36_lipid.prm
+parameters              ../../toppar/par_all36_cgenff.prm
+parameters              ../../toppar/par_water_ions_clean.prm
+parameters              ../hybrid/hybrid.prm
+
+exclude                scaled1-4
+1-4scaling             1.0
+
+structure              ionized.psf
+coordinates            ionized.pdb
+
+# NOTE: do NOT set `temperature` in this common header. NAMD errors with
+# "Cannot specify both an initial temperature and a velocity file" whenever a
+# stage that reads `binvelocities` (npt/forward/backward) also sets an initial
+# temperature. Only `nvt` seeds velocities (via `reinitvels`); it sets
+# `temperature` in its own block below.
+
+outputenergies         500
+outputtiming           500
+outputpressure         500
+restartfreq            500
+XSTFreq                500
+dcdfreq                500
+outputname md_forward_w08
+restartname md_forward_w08
+binaryoutput           yes
+binaryrestart          yes
+
+langevin               on
+langevinTemp           $temp
+langevinDamping        1.0
+
+PME                    yes
+PMEGridSpacing         1.0
+
+cellBasisVector1       89.193 0.0 0.0
+cellBasisVector2       0.0 85.407 0.0
+cellBasisVector3       0.0 0.0 90.624
+cellOrigin             12.069 43.533 21.667
+wrapAll                on
+wrapWater              on
+
+stepspercycle          20
+switching              on
+switchdist             10.0
+cutoff                 12.0
+pairlistdist           14.0
+
+timestep               2.0
+rigidbonds             all
+rigidtolerance         0.000001
+rigiditerations        400
+nonbondedFreq          1
+fullElectFrequency     2
+
+ComMotion              no
+
+# GPU-resident integration -- requires the --with-single-node-cuda build at
+# /home/aistudio/NAMD_3.0.3_Source/Linux-x86_64-g++.gpuresident/namd3
+# (~21x faster). Run it with +p1, NOT +p8: throughput scales inversely with
+# PE count in this mode. See CLAUDE.md.
+GPUresident            on
+
+alch                   on
+alchType               fep
+alchFile               ionized.fep
+alchCol                B
+alchOutFile md_forward_w08.fepout
+alchOutFreq            500
+alchVdwLambdaEnd       1.0
+alchElecLambdaStart    0.5
+alchVdWShiftCoeff      5.0
+alchDecouple           off
+alchEquilSteps         50000
+bincoordinates md_forward_w07.coor
+binvelocities md_forward_w07.vel
+extendedsystem md_forward_w07.xsc
+langevinPiston         on
+langevinPistonTarget   1.01325
+langevinPistonPeriod   100
+langevinPistonDecay    50
+langevinPistonTemp     $temp
+useGroupPressure       yes
+useFlexibleCell        no
+
+alchLambda             0.5394
+alchLambda2            0.61819
+run                    250000

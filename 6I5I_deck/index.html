@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDB 6I5I → ΔΔG · RBFE with NAMD (CLK1 · 12H, N–CH₃ → N–H)</title>
+<link rel="stylesheet" href="lib/reveal/dist/reset.css">
+<link rel="stylesheet" href="lib/reveal/dist/reveal.css">
+<link rel="stylesheet" href="lib/reveal/dist/theme/white.css">
+<style>
+  :root{
+    --ink:#1f2630; --sub:#5b6572; --blue:#1f6fb2; --amber:#c07a12;
+    --red:#b03a2e; --green:#1e8449; --line:#d9dee5; --panel:#f4f6f8;
+  }
+  .reveal{ color:var(--ink); }
+  .reveal .slides section{ top:0 !important; }
+  .reveal section{ text-align:left; }
+  .reveal h1,.reveal h2,.reveal h3{ color:var(--ink); text-transform:none; letter-spacing:0; }
+  .reveal h1{ font-size:1.55em; line-height:1.12; }
+  .reveal h2{ font-size:1.12em; margin:0 0 .34em; border-bottom:3px solid var(--blue);
+              padding-bottom:.16em; }
+  .reveal h3{ font-size:.95em; color:var(--sub); font-weight:600; }
+  .reveal p,.reveal li{ font-size:.57em; line-height:1.35; }
+  .reveal ul{ margin:.18em 0 .18em 1.1em; }
+  .reveal li{ margin:.09em 0; }
+  .kicker{ letter-spacing:.22em; text-transform:uppercase; color:var(--blue);
+           font-weight:700; font-size:.5em; margin-bottom:.7em; }
+  .two-col{ display:flex; gap:1.4em; align-items:flex-start; }
+  .two-col .col{ flex:1; min-width:0; }
+  .panel{ background:var(--panel); border:1px solid var(--line); border-left:5px solid var(--blue);
+          border-radius:6px; padding:.5em .8em; }
+  .panel.amber{ border-left-color:var(--amber); }
+  .panel.red{ border-left-color:var(--red); }
+  .panel.green{ border-left-color:var(--green); }
+  code.mono,pre.code{ font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+          background:#0f1a24; color:#d7e3ee; border-radius:5px; font-size:.46em; }
+  pre.code{ padding:.5em .75em; line-height:1.4; }
+  .small{ font-size:.5em; color:var(--sub); }
+  .eq{ text-align:center; margin:.2em 0; }
+  .eq img{ max-width:96%; }
+  .imgrow{ display:flex; justify-content:center; margin:.25em 0; }
+  .imgrow img{ max-width:100%; }
+  table.mini{ border-collapse:collapse; font-size:.56em; width:100%; }
+  table.mini th,table.mini td{ border:1px solid var(--line); padding:.22em .5em; text-align:left; }
+  table.mini th{ background:var(--panel); color:var(--sub); font-weight:700; }
+  .flow{ display:flex; flex-wrap:wrap; align-items:center; gap:.35em; font-size:.52em;
+         font-family:"SFMono-Regular",Consolas,monospace; }
+  .flow .node{ background:#0f1a24; color:#d7e3ee; border-radius:4px; padding:.28em .55em; }
+  .flow .arrow{ color:var(--blue); font-weight:700; }
+  .foot{ position:fixed; bottom:.35em; left:.6em; color:#98a2af; font-size:.38em; }
+  .reveal .fragment.hl-red{ color:var(--red); }
+  b.blue{ color:var(--blue);} b.red{ color:var(--red);} b.green{ color:var(--green);}
+</style>
+</head>
+<body>
+<div class="foot">6I5I → ΔΔG &nbsp;·&nbsp; RBFE with NAMD on a V100 &nbsp;·&nbsp; repo: NAMD-FEP</div>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============ 1 · TITLE ============ -->
+<section>
+  <div class="kicker">Relative Binding Free Energy · alchemical FEP tutorial</div>
+  <h1>From PDB <span style="color:var(--blue)">6I5I</span> to <span style="color:var(--amber)">ΔΔG</span></h1>
+  <p style="font-size:.78em;margin-top:.3em">Dual-topology RBFE of the CLK1 inhibitor <b>12H</b>
+     (N–CH₃ → N–H desmethyl analogue), run end-to-end with <b>NAMD 3.0.3 GPU-resident</b>
+     on a Tesla V100.</p>
+  <div class="panel" style="margin-top:1em">
+    <p style="margin:0"><b>In this deck</b> &nbsp;① FEP theory &amp; the thermodynamic cycle &nbsp;·
+    ② the ligand modification on 6I5I/CLK1 &nbsp;·&nbsp; ③ preparation of the dual-topology system &nbsp;·
+    ④ compiling NAMD for the GPU &amp; the <b>+p1</b> discovery &nbsp;·&nbsp; ⑤ protocol, runtime, analysis.</p>
+  </div>
+  <aside class="notes">
+    This deck documents the 6I5I relative binding free energy project in the NAMD-FEP repo.
+    15 slides. The real production run is executed by 6I5I_DUAL_FEP/run_all.sh on a single V100.
+  </aside>
+</section>
+
+<!-- ============ 2 · TARGET ============ -->
+<section>
+  <h2>The system: CLK1 + inhibitor 12H (PDB 6I5I)</h2>
+  <div class="two-col">
+    <div class="col">
+      <div class="panel">
+        <p style="margin:0"><b>PDB 6I5I</b> — crystal structure of human <b>CLK1</b> in complex with a
+        furo[3,2-<i>b</i>]pyridine compound <b>12H</b> (ligand residue <b>H3E</b>).</p>
+        <ul style="margin-top:.4em">
+          <li><b>Protein:</b> CDC-like kinase 1 (dual-specificity Tyr/Ser-Thr protein kinase, EC 2.7.12.1)</li>
+          <li><b>Resolution</b> 1.60 Å, engineered/phospho-regulatory kinase domain, chain A</li>
+          <li><b>CLK1</b> regulates <b>alternative splicing</b> by phosphorylating SR proteins — oncology target</li>
+          <li>Ligand <b>12H</b>: furo[3,2-b]pyridine, ATP-competitive kinase inhibitor</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="panel amber">
+        <p style="margin:0"><b>Medicinal-chemistry question</b></p>
+        <p style="margin:.3em 0">We swap one substituent on the inhibitor and ask:
+        <b>does the analogue still bind, and by how much?</b></p>
+        <p style="margin:0">Concretely: replace the <b>N-methyl</b> of 12H by <b>N–H</b>
+        (desmethyl analogue). Compute the change in binding free energy
+        <b>ΔΔG<sub>bind</sub></b>.</p>
+      </div>
+      <p class="small" style="margin-top:.5em">Reproduce the setup from repo <code>6I5I_DUAL_FEP/</code> —
+      no FEPrepare / Maestro / LigParGen required.</p>
+    </div>
+  </div>
+  <aside class="notes">CLK1 = CDC-like kinase 1. 6I5I deposited 2018, 1.6 Å. Ligand compound 12H is the
+  co-crystallised furo-pyridine inhibitor; in our prep the ligand PDB residue was renamed UNL.
+  Reference ligand keeps the methyl; mutant is the desmethyl N-H analogue.</aside>
+</section>
+
+<!-- ============ 3 · LIGAND MODIFICATION ============ -->
+<section>
+  <h2>The modification: one N–CH₃ becomes N–H</h2>
+  <div class="imgrow"><img src="assets/ligand_swap.png" style="max-width:62%"></div>
+  <ul>
+    <li><b>Reference</b>: ring nitrogen <b>N4</b> is N-methylated (–CH₃ = C12 + H7–H9).</li>
+    <li><b>Mutant</b> (desmethyl): the methyl is removed → N4 carries a single <b>H</b> (H17).</li>
+    <li>Same scaffold, different end state → an ideal <b>alchemical</b> perturbation: the ligand never leaves the pocket.</li>
+  </ul>
+  <aside class="notes">In the dual-topology representation the scaffold is shared (present once) and only the
+  N4 substituent differs. Bookkeeping from the FEP file: vanish set = {C12,H7,H8,H9} (B=-1),
+  appear set = {H17} (B=+1).</aside>
+</section>
+
+<!-- ============ 4 · CYCLE ============ -->
+<section>
+  <h2>Relative binding free energy — the thermodynamic cycle</h2>
+  <div class="two-col">
+    <div class="col"><div class="imgrow"><img src="assets/cycle.png" style="max-width:100%"></div></div>
+    <div class="col">
+      <div class="eq"><img src="assets/eq_ddg.png"></div>
+      <ul style="margin-top:.4em">
+        <li>ΔG<sub>bind</sub> of each ligand needs an <i>absolute</i> solvation + complex computation;
+            their <b>difference cancels most systematic error</b>.</li>
+        <li>Only <b>two alchemical legs</b> are simulated: the mutation inside the complex and inside water.</li>
+        <li>Output: relative change in affinity between two chemically related ligands — the quantity
+            medicinal chemists rank candidates by.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">ΔΔG = ΔG_complex − ΔG_solvent. Both legs are computed by the same alchemical
+  engine (identical force fields, same λ windows) so the difference is high-precision.</aside>
+</section>
+
+<!-- ============ 5 · FEP THEORY ============ -->
+<section>
+  <h2>Free-energy perturbation (Zwanzig) — the idea</h2>
+  <div class="eq" style="margin:.6em 0"><img src="assets/eq_zwanzig.png"></div>
+  <div class="two-col">
+    <div class="col">
+      <div class="panel">
+        <p style="margin:0"><b>How to read it</b></p>
+        <ul style="margin-top:.3em">
+          <li>We <i>interpolate</i> the Hamiltonian between end states with a coupling parameter <b>λ</b>:
+              V(λ) turns the methyl off and the N–H on.</li>
+          <li>One simulation is run at λ<sub>i</sub>; the energy <b>ΔV = V<sub>i+1</sub> − V<sub>i</sub></b>
+              is evaluated on each frame → a Boltzmann-weighted exponential average.</li>
+          <li>The average is only reliable when the two neighbouring states <b>overlap</b> — hence many small windows.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="panel amber">
+        <p style="margin:0"><b>Why FEP for RBFE</b></p>
+        <ul style="margin-top:.3em">
+          <li>Alchemy bridges states that are hard to reach by brute-force sampling (no ligand association).</li>
+          <li>Works when the perturbation is local (one functional group) and well-equilibrated.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Zwanzig 1954. The ⟨·⟩_A average means configurations are sampled at state A but the
+  energy difference to state B is re-weighted. Small perturbations → fast convergence; big ones need intermediates.</aside>
+</section>
+
+<!-- ============ 6 · LAMBDA WINDOWS ============ -->
+<section>
+  <h2>Windows &amp; estimators: split the path, combine the pieces</h2>
+  <div class="imgrow" style="margin:.15em 0"><img src="assets/lambda_schedule.png" style="max-width:70%"></div>
+  <ul>
+    <li>0 → 1 is cut into <b>15 windows</b>; each runs a short MD and hands a distribution to the next.</li>
+    <li><b>BAR</b> (Bennett Acceptance Ratio) combines <b>forward and backward</b> energies per window;
+        both directions are run (λ 0→1 and 1→0) and their agreement is the <b>hysteresis</b> check.</li>
+    <li>Windows denser near λ=0 and λ=1, where electrostatics / soft-core VdW change fastest.
+        <span class="small">ΔG = Σᵢ ΔGᵢ, each ΔGᵢ = −(1/β)ln⟨e^(−βΔVᵢ)⟩ᵢ.</span></li>
+  </ul>
+  <aside class="notes">Lambda set used: {0, .045, .09, .14546, .22425, .30303, .38182, .46061, .5394,
+  .61819, .697, .77576, .85455, .91, .955, 1}. 250k steps (0.5 ns) per window; 50k steps flagged for
+  equilibration (alchEquilSteps) and discarded by ParseFEP/BAR.</aside>
+</section>
+
+<!-- ============ 7 · DUAL TOPOLOGY ============ -->
+<section>
+  <h2>Dual topology: one core, two substituents</h2>
+  <div class="two-col">
+    <div class="col">
+      <div class="panel">
+        <p style="margin:0"><b>NAMD default: dual topology</b> (<code>singleTopology off</code>)</p>
+        <ul style="margin-top:.3em">
+          <li>The <b>common core</b> is present <b>once</b> (always fully interacting).</li>
+          <li>The atoms that differ — the methyl (ref) and the N–H (mut) — are <b>both present</b>
+              and switched on/off through λ:</li>
+          <li style="list-style:none;margin-left:-1em"><table class="mini">
+            <tr><th>λ</th><th>methyl (C12H₃)</th><th>N–H (H17)</th><th>common core</th></tr>
+            <tr><td><b>0</b> (reference)</td><td style="color:var(--red)">interacting</td><td style="color:var(--sub)">dummy</td><td>interacting</td></tr>
+            <tr><td><b>1</b> (mutant)</td><td style="color:var(--sub)">dummy</td><td style="color:var(--green)">interacting</td><td>interacting</td></tr>
+          </table></li>
+          <li>VdW of the disappearing atom is <b>soft-cored</b> (avoid end-point singularities); charges decouple
+              gradually.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="panel amber">
+        <p style="margin:0"><b>Trade-offs</b></p>
+        <ul style="margin-top:.3em">
+          <li>Easiest to build (no shared-template choreography of the two ligands).</li>
+          <li>The "dummy" atoms interact with nothing — slight waste, but well supported in NAMD.</li>
+          <li>Alternative <b>single topology</b> mutates atoms in place; we use dual for robustness here.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">In NAMD this is alchemical-type FEP with alchDecouple off for the RBFE perturbation
+  (keeps the ligand core charged and coupled; only the methyl↔H swap is perturbed).</aside>
+</section>
+
+<!-- ============ 8 · B-FACTOR MARKING ============ -->
+<section>
+  <h2>How λ-dependence is written: the <code>.fep</code> B-factor column</h2>
+  <div class="two-col">
+    <div class="col">
+      <pre class="code"># ionized.fep — NAMD reads the tag via
+#   alchFile ionized.fep · alchCol B
+# (the PDB B-factor column re-purposed
+#  as an alchemical mask)
+HETATM ... UNL  C12 ... -1.00  # VANISH  methyl
+HETATM ... UNL  N4  ...  0.00  # COMMON  scaffold
+HETATM ... UNL  H17 ... +1.00  # APPEAR  N-H</pre>
+      <p class="small">Only the end-state substituents are tagged; protein, water, ions and the shared core are B = 0.</p>
+    </div>
+    <div class="col">
+      <div class="panel">
+        <p style="margin:0"><b>The encoding</b></p>
+        <ul style="margin-top:.25em">
+          <li><b style="color:var(--red)">B = −1</b> present in the reference, <i>vanished</i> at λ=1 (methyl)</li>
+          <li><b style="color:var(--sub)">B = 0</b> common / environment (protein · water · scaffold)</li>
+          <li><b style="color:var(--green)">B = +1</b> appears only in the mutant (N–H)</li>
+          <li class="small">Written from <code>ionized.pdb</code> by a deterministic Python pass — no hand edits.</li>
+        </ul>
+      </div>
+      <div class="panel red" style="margin-top:.45em">
+        <p style="margin:0"><b>Gotcha:</b> both end-state atoms (methyl <i>and</i> N–H) must be present in the PSF
+        at once — this is the essence of the dual topology.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">The vanishing methyl atoms still exist in the topology but their nonbonded terms are
+  scaled to zero by the alchemical λ. The appearance/annihilation is controlled purely by the B column here.</aside>
+</section>
+
+<!-- ============ 9 · PREPARATION ============ -->
+<section>
+  <h2>End-to-end preparation in three plain-Python scripts</h2>
+  <div class="flow" style="margin:.6em 0">
+    <span class="node">protein.pdb<br>+ ref / mut ligand</span><span class="arrow">→</span>
+    <span class="node">prepare_hybrid.py<br>chemical map + N-frame Kabsch</span><span class="arrow">→</span>
+    <span class="node">hybrid.rtf/prm/pdb<br>(one dual-topology ligand)</span><span class="arrow">→</span>
+    <span class="node">build_system.py<br>psfgen · solvate · ionize</span><span class="arrow">→</span>
+    <span class="node">complex/ &amp; solvent/<br>ionized.{psf,pdb}</span><span class="arrow">→</span>
+    <span class="node">write_fep_inputs.py<br>.fep · fep.tcl · .namd</span><span class="arrow">→</span>
+    <span class="node">run_all.sh</span>
+  </div>
+  <div class="two-col">
+    <div class="col"><div class="panel">
+      <p style="margin:0"><b>prepare_hybrid.py</b></p>
+      <ul style="margin-top:.3em">
+        <li>Maps methyl / N–H by <b>local chemical environment</b> — graph isomorphism fails on the symmetric ring.</li>
+        <li>Places the new N–H using a local N-frame <b>Kabsch</b> fit.</li>
+        <li>Merges CHARMM-compatible ligand params (methyl + N–H + cross terms) into <code>hybrid.rtf/prm</code>.</li>
+      </ul>
+    </div></div>
+    <div class="col"><div class="panel">
+      <p style="margin:0"><b>build_system.py · write_fep_inputs.py</b></p>
+      <ul style="margin-top:.3em">
+        <li>psfgen: protein is split at a <b>disordered gap (412→416)</b> into segments P1+P2, then ligand added.</li>
+        <li>Solvate (TIP3P) + auto-ionize → complex &amp; pure-solvent boxes.</li>
+        <li>Mark B-factors → <code>ionized.fep</code>; write <code>fep.tcl</code> (16 λ) and 8 <code>.namd</code> configs.</li>
+      </ul>
+    </div></div>
+  </div>
+  <p class="small">Replaces the Feprepare web server, Maestro and LigParGen. numpy-only; no RDKit, no GUI.</p>
+  <aside class="notes">Workflow in repo: python3 prepare_hybrid.py && python3 build_system.py &&
+  python3 write_fep_inputs.py, then bash run_all.sh. Water/ions use toppar/par_water_ions_clean.prm
+  because NAMD cannot parse the .str topology+param stream.</aside>
+</section>
+
+<!-- ============ 10 · SYSTEMS & FF ============ -->
+<section>
+  <h2>The two simulated systems &amp; the force field</h2>
+  <div class="two-col">
+    <div class="col">
+      <table class="mini">
+        <tr><th></th><th>complex leg</th><th>solvent leg</th></tr>
+        <tr><td>contents</td><td>CLK1 + hybrid ligand<br>+ TIP3P water + ions</td><td>hybrid ligand<br>in TIP3P water</td></tr>
+        <tr><td>atoms</td><td><b>64 651</b></td><td><b>5 013</b></td></tr>
+        <tr><td>box (Å)</td><td>89.2 × 85.4 × 90.6</td><td>35.9 × 38.2 × 40.2</td></tr>
+        <tr><td>role</td><td>ΔG<sup>complex</sup></td><td>ΔG<sup>solvent</sup></td></tr>
+      </table>
+      <p class="small" style="margin-top:.4em">ΔΔG = ΔG<sup>complex</sup> − ΔG<sup>solvent</sup> — same
+      force field, same windows in both legs.</p>
+    </div>
+    <div class="col">
+      <div class="panel">
+        <p style="margin:0"><b>Force-field stack</b></p>
+        <ul style="margin-top:.3em">
+          <li>Protein: <b>CHARMM36m</b> (+ lipid / carb / na toppar as needed)</li>
+          <li>Ligand: CHARMM-compatible small-molecule parameters
+              (<i>ca/na/c3/hn/os …</i>, CGenFF-style) in <code>hybrid.rtf/prm</code></li>
+          <li>Water / ions: <code>par_water_ions_clean.prm</code></li>
+          <li>PME electrostatics, 12 Å cutoff, switching at 10 Å, TIP3P + rigid bonds (2 fs)</li>
+        </ul>
+      </div>
+      <div class="panel green" style="margin-top:.5em">
+        <p style="margin:0"><b>Sampling</b> — 300 K Langevin dynamics (NVT → NPT), well-equilibrated
+        before the production windows begin.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">The two legs are run with identical settings so their difference is meaningful.
+  GPU-resident integration handles all nonbonded work; the ligand-only solvent box is latency-bound,
+  not size-bound.</aside>
+</section>
+
+<!-- ============ 11 · COMPILING NAMD ============ -->
+<section>
+  <h2>Compiling NAMD 3.0.3 for the V100 (GPU-resident)</h2>
+  <div class="two-col">
+    <div class="col">
+      <pre class="code">./config Linux-x86_64-g++.gpuresident \
+  --charm-arch multicore-linux-x86_64 \
+  --with-single-node-cuda \
+  --cuda-prefix /usr/local/cuda-11.8 \
+  --cuda-gencode arch=compute_70,code=sm_70
+make -j32</pre>
+      <ul style="margin-top:.5em">
+        <li>NAMD 3.0.3 + bundled <b>Charm++ 8</b> (multicore arch), TCL/FFTW2 libs; host Ubuntu 20.04,
+            <b>CUDA 11.8</b>, V100 <b>sm_70</b>.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="panel red">
+        <p style="margin:0"><b>The one flag that matters</b></p>
+        <p style="margin:.3em 0">Plain <code>--with-cuda</code> silently disables GPU-resident integration.
+        Use <code>--with-single-node-cuda</code> — it defines <code>NODEGROUP_FORCE_REGISTER</code> and unlocks
+        the <code>GPUresident</code> path (gated in <code>src/SimParameters.C</code>).</p>
+        <p style="margin:0">Without it: <code>FATAL: GPUresident not supported on regular multicore builds</code>.</p>
+      </div>
+      <div class="panel amber" style="margin-top:.45em">
+        <p style="margin:0"><b>Build gotcha:</b> prebuilt FFTW2 archives are <b>not -fPIC</b> → link fails on
+        Ubuntu 20.04 PIE. Rebuild FFTW 2.1.5 with <code>-O3 -fPIC</code>.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">No Fortran is needed for NAMD 3.x (that resolves the gfortran note). Binary:
+  Linux-x86_64-g++.gpuresident/namd3. Keep the plain -g++ build only for CPU comparison.</aside>
+</section>
+
+<!-- ============ 12 · PERFORMANCE ============ -->
+<section>
+  <h2>Performance: GPU-resident, and <b>fewer threads is faster</b></h2>
+  <div class="two-col">
+    <div class="col">
+      <div class="imgrow"><img src="assets/gpu_scaling.png" style="max-width:100%"></div>
+    </div>
+    <div class="col">
+      <div class="panel red">
+        <p style="margin:0"><b>Counter-intuitive but reproducible</b> — in GPU-resident mode
+        throughput is ~inversely proportional to the PE count. <b>Run with <code>+p1</code>, not +p8.</b></p>
+      </div>
+      <ul style="margin-top:.6em">
+        <li><b>Why:</b> virtually all work is on the GPU; extra CPU PEs only add synchronization contention.</li>
+        <li>Old build <code>+p8</code>: 3.6 ns/day (plain) → GPU-resident <code>+p1</code>: <b>75.8</b> = ~<b>21×</b></li>
+        <li>FEP leg ~22×; versus the very first baseline ≈ <b>45×</b>.</li>
+        <li><b>Physics not sacrificed:</b> single-point energy agrees with the CPU build to ~8 s.f.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">Table measured on the 64,651-atom complex, identical configs:
+  +p1 75.8, +p2 59.5, +p4 27.2, +p8 13.2, +p16 6.3, +p32 2.7 ns/day. stepspercycle etc made no
+  difference — PE count is the whole story. GPU memory is not the limit (~590 MiB of 16 GiB used).</aside>
+</section>
+
+<!-- ============ 13 · PROTOCOL ============ -->
+<section>
+  <h2>Simulation protocol (identical for complex &amp; solvent)</h2>
+  <div class="two-col">
+    <div class="col">
+      <table class="mini">
+        <tr><th>stage</th><th>what happens</th><th>steps</th><th>continues from</th></tr>
+        <tr><td>nvt</td><td>minimize 5k → Langevin NVT, 300 K, 0.1 ns</td><td>55 000</td><td>ionized.pdb</td></tr>
+        <tr><td>npt</td><td>Langevin-piston NPT (1 atm), 0.1 ns</td><td>50 000</td><td>nvt restart (.coor/.vel/.xsc)</td></tr>
+        <tr><td>fwd</td><td>alchemical FEP λ 0→1</td><td>15 × 250 000</td><td>npt restart</td></tr>
+        <tr><td>bwd</td><td>alchemical FEP λ 1→0</td><td>15 × 250 000</td><td>npt restart</td></tr>
+      </table>
+      <p class="small" style="margin-top:.4em">Each direction ≈ 7.5 ns of sampling (15 × 0.5 ns/window).</p>
+    </div>
+    <div class="col">
+      <div class="panel">
+        <p style="margin:0"><b>λ schedule (fep.tcl)</b></p>
+        <p class="mono" style="font-size:.5em;line-height:1.5;margin-top:.4em">
+        0 · .045 · .09 · .14546 · .22425 · .30303 · .38182 · .46061<br>
+        .5394 · .61819 · .697 · .77576 · .85455 · .91 · .955 · 1</p>
+        <ul style="margin-top:.3em">
+          <li><b>50 000</b> equilibration steps flagged (<code>alchEquilSteps</code>) and discarded from the BAR input.</li>
+          <li>Restart / trajectory / <code>.fepout</code> written every <b>500</b> steps.</li>
+          <li>End states held at λ=0 (methyl on) and λ=1 (N–H on); dual-topology decoupling via B-factors.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Chained stages must read the previous stage restart file, which is why nvt alone seeds
+  velocities: a restart stage must not also set an initial temperature
+  ("Cannot specify both an initial temperature and a velocity file").</aside>
+</section>
+
+<!-- ============ 14 · RUNTIME ============ -->
+<section>
+  <h2>Runtime on one V100 — projected, sequential</h2>
+  <div class="two-col">
+    <div class="col">
+      <div class="imgrow"><img src="assets/runtime.png" style="max-width:100%"></div>
+      <p class="small">Complex ≈ 47 ns/day · solvent ≈ 59 ns/day (0.0037 / 0.0029 s·step⁻¹), GPU-resident +p1.</p>
+    </div>
+    <div class="col">
+      <div class="panel">
+        <p style="margin:0"><b>Why the solvent leg is not ~13× faster</b></p>
+        <ul style="margin-top:.3em">
+          <li>5,013-atom solvent leg is <b>latency-bound</b> on the V100 — it saturates near ~59 ns/day
+              regardless of size.</li>
+          <li>GPU memory is <b>not</b> a bottleneck (~590 MiB peak vs 16 GiB free); only a faster GPU
+              (A100/H100) or fewer PEs helps.</li>
+          <li>Full job (both legs, both directions): <b>≈ 14–16 h</b> wall-clock.</li>
+        </ul>
+      </div>
+      <div class="panel green" style="margin-top:.5em">
+        <p style="margin:0"><b>On the original ~1.7 ns/day baseline this would have taken ~25–30 days.</b>
+        The GPU-resident fix + <code>+p1</code> rule is what makes daily FEP iteration feasible.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Production launch: complex nvt→npt→md_forward→md_backward, then solvent, run
+  sequentially by run_all.sh. Logs stream to per-stage .log; .fepout/.coor/.dcd/.restart accumulate per leg.</aside>
+</section>
+
+<!-- ============ 15 · ANALYSIS ============ -->
+<section>
+  <h2>Turning trajectories into a number: analysis &amp; next steps</h2>
+  <div class="two-col">
+    <div class="col">
+      <div class="panel">
+        <p style="margin:0"><b>From <code>.fepout</code> to ΔΔG</b></p>
+        <ul style="margin-top:.25em">
+          <li>Parse <code>md_forward</code> / <code>md_backward.fepout</code> (both legs).</li>
+          <li><b>BAR</b> per window → ΔG<sup>complex</sup>, ΔG<sup>solvent</sup>;</li>
+          <li><b>ΔΔG = ΔG<sup>complex</sup> − ΔG<sup>solvent</sup></b> ± hysteresis / bootstrap.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="panel amber">
+        <p style="margin:0"><b>Checks</b> — forward vs backward agree (converged); ΔG smooth across λ;
+        compare with experiment.</p>
+      </div>
+      <div class="panel" style="margin-top:.45em">
+        <p style="margin:0"><b>Extend</b> — MBAR over the same windows; repeats for statistics;
+        score a series of analogues with the same prep scripts.</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel green" style="margin-top:.45em">
+    <p style="margin:0"><b>Take-home.</b> ① one local perturbation → two alchemical legs; ② dual-topology NAMD +
+    a B-factor mask needs only scaffold + end-state atoms; ③ a GPU-resident build run with <b>+p1</b> turned
+    a ~30-day job into an overnight one — and <b>more</b> threads would have made it slower.</p>
+  </div>
+  <aside class="notes">After the run completes, analysis follows the same recipe as T4L_RBFE output files:
+  BAR between neighbouring windows using forward+backward, reporting ΔG per leg then ΔΔG.</aside>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="lib/reveal/dist/reveal.js"></script>
+<script src="lib/reveal/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'none',
+    width: 1280,
+    height: 760,
+    plugins: [ RevealNotes ]
+  });
+</script>
+</body>
+</html>

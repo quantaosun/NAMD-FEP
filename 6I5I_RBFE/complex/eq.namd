@@ -1,0 +1,52 @@
+# 6I5I CLK1 + H3E — minimize + short NVT equilibration
+paraTypeCharmm          on
+parameters              /home/aistudio/work/NAMD-FEP/toppar/par_all36m_prot.prm
+parameters              /home/aistudio/work/NAMD-FEP/toppar/par_all36_na.prm
+parameters              /home/aistudio/work/NAMD-FEP/toppar/par_all36_carb.prm
+parameters              /home/aistudio/work/NAMD-FEP/toppar/par_all36_lipid.prm
+parameters              /home/aistudio/work/NAMD-FEP/toppar/par_all36_cgenff.prm
+parameters              /home/aistudio/work/NAMD-FEP/toppar/par_water_ions_clean.prm
+parameters              ligand.prm
+
+exclude                 scaled1-4
+1-4scaling              1.0
+cutoff                  12.0
+switching               on
+switchdist              10.0
+pairlistdist            14.0
+stepspercycle           20
+
+structure               ionized.psf
+coordinates             ionized.pdb
+
+PME                     yes
+PMEGridSpacing          1.0
+
+cellBasisVector1        89.193 0 0
+cellBasisVector2        0 85.407 0
+cellBasisVector3        0 0 90.624
+cellOrigin              12.069 43.533 21.669
+
+temperature             300
+langevin                on
+langevinTemp            300
+langevinDamping         1.0
+
+timestep                1.0
+rigidBonds              all
+rigidTolerance          0.000001
+rigidIterations         400
+nonbondedFreq           1
+fullElectFrequency      2
+
+# output settings (BEFORE commands)
+outputName              eq
+restartName             eq
+restartfreq             5000
+dcdfreq                 1000
+outputEnergies          1000
+outputTiming            1000
+
+# --- commands ---
+minimize                2000
+run                     5000

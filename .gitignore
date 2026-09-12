@@ -2,6 +2,12 @@
 __pycache__/
 *.pyc
 
+# Editor / process scratch
+*.pid
+*.swo
+*.swp
+*~
+
 # NAMD/VMD run artifacts (regenerable / transient)
 *.coor
 *.vel

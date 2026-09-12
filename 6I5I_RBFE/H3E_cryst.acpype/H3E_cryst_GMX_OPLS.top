@@ -1,0 +1,19 @@
+; H3E_cryst_GMX_OPLS.top created by acpype (v: 2023.10.27) on Sun Aug 23 13:12:49 2026
+
+; Include forcefield parameters
+#include "ffoplsaa.itp"
+
+; Include H3E_cryst_GMX.itp topology
+#include "H3E_cryst_GMX.itp"
+
+; Ligand position restraints
+#ifdef POSRES_LIG
+#include "posre_H3E_cryst.itp"
+#endif
+
+[ system ]
+ H3E_cryst
+
+[ molecules ]
+; Compound        nmols
+ H3E_cryst        1     
