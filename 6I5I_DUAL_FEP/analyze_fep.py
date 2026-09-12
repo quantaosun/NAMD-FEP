@@ -43,19 +43,35 @@ from pathlib import Path
 
 R = 0.001987204259          # kcal / (mol K)  (CODATA)
 WIN_HDR = re.compile(r"LAMBDA SET TO\s+([\d.]+)\s+LAMBDA2\s+([\d.]+)")
+EQUIL_MARK = "STEPS OF EQUILIBRATION AT LAMBDA"
+
+# alchEquilSteps 50000 at 2 fs = 100 ps of per-window equilibration, written
+# every alchOutFreq 500 steps, so each window's .fepout opens with 99
+# pre-equilibration rows (steps 500..49500) ahead of its 401 production rows.
+# NAMD's own accumulator resets at stepInRun == alchEquilSteps
+# (Controller::outputFepEnergy), so its dE_avg/dG columns use the 401 only --
+# averaging all 500 mixes in data NAMD itself throws away.
+DEFAULT_EQUIL_ROWS = 99
 
 
-def parse_combined(path: Path) -> list[dict]:
-    """Split a NAMD fepout into windows of dE samples (kcal/mol).
+def parse_combined(path: Path, trim: int | None = None) -> list[dict]:
+    """Split a NAMD fepout into windows of PRODUCTION dE samples (kcal/mol).
 
     Windows are delimited by '#NEW FEP WINDOW: LAMBDA SET TO ... LAMBDA2 ...'
-    lines. The first such line is often duplicated inside the copied header
-    (canonical_header includes the '#NEW FEP WINDOW: LAMBDA SET TO 0 ...' line),
-    so a window that ends up with zero data rows is dropped. Returns windows in
-    file order, each {'l1','l2','dE':[...]}.
+    lines. The first such line is often duplicated inside a copied header, so a
+    window with zero data rows is dropped. Returns windows in file order, each
+    {'l1','l2','dE':[...]}.
+
+    trim controls how many leading samples are discarded per window:
+      None -> auto-detect from NAMD's own
+              '#<N> STEPS OF EQUILIBRATION AT LAMBDA ... COMPLETED' marker,
+              falling back to DEFAULT_EQUIL_ROWS for files that lack it;
+      0    -> keep everything (the pre-2026-09-12 behaviour);
+      N    -> keep samples [N:].
     """
     windows: list[dict] = []
     cur: dict | None = None
+    prod = False
     with open(path) as fh:
         for ln in fh:
             if ln.startswith("#NEW FEP WINDOW"):
@@ -63,16 +79,34 @@ def parse_combined(path: Path) -> list[dict]:
                 if m:
                     if cur is not None and cur["dE"]:      # close previous
                         windows.append(cur)
-                    cur = {"l1": float(m.group(1)), "l2": float(m.group(2)), "dE": []}
+                    cur = {"l1": float(m.group(1)), "l2": float(m.group(2)),
+                           "dE": [], "prod_start": None}
+                    prod = False
                 else:
                     cur = None
+            elif ln.startswith("#") and EQUIL_MARK in ln:
+                prod = True                                # production starts here
             elif ln.startswith("FepEnergy") and cur is not None:
                 p = ln.split()
                 if len(p) >= 7:
+                    if prod and cur["prod_start"] is None:
+                        cur["prod_start"] = len(cur["dE"])
                     cur["dE"].append(float(p[6]))           # col 6 = dE
     if cur is not None and cur["dE"]:
         windows.append(cur)
-    return windows
+
+    out: list[dict] = []
+    for w in windows:
+        if trim is None:
+            start = w["prod_start"]
+            if start is None:                              # legacy file, no marker
+                start = DEFAULT_EQUIL_ROWS
+        else:
+            start = trim
+        d = w["dE"][start:]
+        if d:
+            out.append({"l1": w["l1"], "l2": w["l2"], "dE": d})
+    return out
 
 
 def exp_window(dE: list[float], beta: float) -> tuple[float, int]:
@@ -84,10 +118,10 @@ def exp_window(dE: list[float], beta: float) -> tuple[float, int]:
     return -(1.0 / beta) * (m + math.log(math.fsum(math.exp(v - m) for v in x) / len(x))), len(x)
 
 
-def exp_leg(path: Path, temp: float) -> dict:
+def exp_leg(path: Path, temp: float, trim: int | None = None) -> dict:
     """EXP (forward-only) analysis of a single leg."""
     beta = 1.0 / (R * temp)
-    wins = parse_combined(path)
+    wins = parse_combined(path, trim)
     total = 0.0
     rows = []
     for w in wins:
@@ -126,11 +160,12 @@ def bar_window(fwd: list[float], bwd: list[float], beta: float, iters: int = 200
     return 0.5 * (lo + hi) / beta
 
 
-def bar_leg(fwd_path: Path, bwd_path: Path, temp: float) -> dict:
+def bar_leg(fwd_path: Path, bwd_path: Path, temp: float,
+            trim: int | None = None) -> dict:
     """BAR between a forward (0->1) and backward (1->0) leg of one system."""
     beta = 1.0 / (R * temp)
-    fwd = parse_combined(fwd_path)
-    bwd = parse_combined(bwd_path)
+    fwd = parse_combined(fwd_path, trim)
+    bwd = parse_combined(bwd_path, trim)
     if len(fwd) != len(bwd):
         print(f"[err] fwd/bwd window count mismatch: {len(fwd)} vs {len(bwd)}", file=sys.stderr)
         sys.exit(1)
@@ -168,20 +203,31 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Analyze NAMD .fepout files (EXP/BAR)")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
+    def add_trim(p):
+        p.add_argument("--temp", type=float, default=300.0)
+        p.add_argument("--trim", type=int, default=None,
+                       help="leading samples to discard per window; default is "
+                            "auto-detect from NAMD's equilibration marker "
+                            f"(falls back to {DEFAULT_EQUIL_ROWS})")
+        p.add_argument("--no-trim", action="store_true",
+                       help="keep every sample, including per-window "
+                            "equilibration (pre-2026-09-12 behaviour; biased)")
+
     e = sub.add_parser("exp", help="one-sided Zwanzig from forward data")
     e.add_argument("files", nargs="+", type=Path,
                    help="forward .fepout(s); two = complex + solvent -> ddG")
-    e.add_argument("--temp", type=float, default=300.0)
+    add_trim(e)
 
     b = sub.add_parser("bar", help="two-sided BAR from fwd+bwd pairs")
     b.add_argument("files", nargs=4, type=Path,
                    help="complex_fwd complex_bwd solvent_fwd solvent_bwd")
-    b.add_argument("--temp", type=float, default=300.0)
+    add_trim(b)
 
     a = ap.parse_args()
+    trim = 0 if a.no_trim else a.trim
 
     if a.cmd == "exp":
-        results = [exp_leg(p, a.temp) for p in a.files]
+        results = [exp_leg(p, a.temp, trim) for p in a.files]
         if len(results) == 1:
             labels = [f"{results[0]['path'].rsplit('/', 1)[-1]} (EXP)"]
         else:
@@ -197,8 +243,8 @@ def main() -> int:
             print(f"  ddG = dG_complex - dG_solvent = {ddg:10.4f} kcal/mol")
             print(f"{'='*60}")
     else:
-        cplx = bar_leg(a.files[0], a.files[1], a.temp)
-        solv = bar_leg(a.files[2], a.files[3], a.temp)
+        cplx = bar_leg(a.files[0], a.files[1], a.temp, trim)
+        solv = bar_leg(a.files[2], a.files[3], a.temp, trim)
         _print_leg("Complex (BAR)", cplx, exp=False)
         _print_leg("Solvent (BAR)", solv, exp=False)
         ddg = cplx["total_dG"] - solv["total_dG"]
