@@ -232,3 +232,34 @@ That, not the estimator, is why this quantity is hard.
 **Practical implication.** The honest error bar is ≈ ±0.2 kcal/mol, not ±0.06. Improving it
 means more sampling per window (2–5 ns), more windows around λ 0.5–0.8, and seeding the
 backward leg from the forward endpoint — not a different estimator.
+
+### 7.5 Known limitation of the existing result: the hybrid charge cycle did not close
+
+`hybrid/hybrid.rtf` sums to **+0.174789** while both `inputs/ref.rtf` and `inputs/mut.rtf`
+sum to 0. The shared core keeps the *reference* charges, but ref and mut disagree on the
+anchor nitrogen (ref `N4` = −0.235229, mut `N` = −0.245202). `prepare_hybrid.py` copied the
+appearing H's charge verbatim out of `mut.rtf` (+0.174786), so nothing absorbed that
+difference and:
+
+| state | net charge |
+|---|---|
+| λ = 0 (core + methyl) | +0.000003 ✓ |
+| λ = 1 (core + N–H) | **+0.0162** ✗ |
+
+**So the λ = 1 endpoint is not exactly the neutral desmethyl ligand** — it carries +0.0162 e.
+The magnitude is small and the same defect is present in both the complex and solvent legs,
+so it largely cancels in ΔΔG; it does not change the qualitative conclusion in §7.1. It is
+recorded here rather than silently fixed because fixing it changes the topology and would
+require re-running both legs (~14 h) to produce a paired number.
+
+`prepare_hybrid.py` **is now fixed** for future systems: it computes the required
+appearing-group total as `mut_total − core_total`, applies the correction, and raises if the
+endpoints do not close. Re-running it on the 6I5I inputs now gives λ=0 +0.000003 / λ=1
++0.000000, and changes **exactly two lines** versus the committed file —
+`ATOM H17 0.174786 → 0.158610` and `RESI UNL 0.000 → 0.158613`. `hybrid.prm` and
+`hybrid.pdb` are byte-identical.
+
+⚠️ **The committed `hybrid/` was deliberately NOT regenerated.** It is the topology the
+production run actually used, so regenerating it would desync the repo from the number in
+§7.1. If you ever re-run 6I5I, regenerate first and note that the new result will differ
+slightly from −0.106 for this reason as well as for sampling.

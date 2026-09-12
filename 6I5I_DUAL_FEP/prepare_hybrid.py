@@ -245,21 +245,64 @@ def main() -> None:
     print(f"N-H placed at : ({nh_xyz[0]:.3f}, {nh_xyz[1]:.3f}, {nh_xyz[2]:.3f})"
           f"  (N-H bond {d:.3f} A)")
 
+    # --- charge closure ---------------------------------------------------
+    # The hybrid carries ONE copy of the common core, but ref and mut may assign
+    # that core different charges. That difference has to be absorbed by the
+    # alchemical atoms, otherwise the endpoints are not the physical molecules.
+    #
+    # Copying the appearing atom's charge verbatim out of mut.rtf (the original
+    # behaviour) is wrong whenever the two ligands disagree on a shared atom.
+    # For 6I5I that left the hybrid summing to +0.174789 while both inputs sum
+    # to 0, so the lambda=1 state carried +0.0162 e of net charge -- it was not
+    # the neutral desmethyl ligand.
+    #
+    # Closure conditions, with the core fixed at the reference charges:
+    #     lambda=0 :  core + vanish == sum(ref charges)
+    #     lambda=1 :  core + appear == sum(mut charges)
+    # so the appearing group must total  mut_total - core_total.
+    ref_total = sum(a[2] for a in ref["atoms"])
+    mut_total = sum(a[2] for a in mut["atoms"])
+    ref_chg = {a[0]: a[2] for a in ref["atoms"]}
+    vanish_total = sum(ref_chg[n] for n in ref_only)
+    core_total = ref_total - vanish_total
+
+    mut_atom = {a[0]: a for a in mut["atoms"]}
+    appear_total_required = mut_total - core_total
+    appear_native = sum(mut_atom[n][2] for n in mut_only)
+    correction = appear_total_required - appear_native
+    per_atom = correction / len(mut_only)
+    appear_chg = {n: mut_atom[n][2] + per_atom for n in mut_only}
+
+    lam0 = core_total + vanish_total
+    lam1 = core_total + sum(appear_chg.values())
+    print(f"charge closure    : ref_total {ref_total:+.6f}  mut_total {mut_total:+.6f}")
+    print(f"                    core {core_total:+.6f}  vanish {vanish_total:+.6f}")
+    print(f"                    appearing group native {appear_native:+.6f} "
+          f"-> {appear_total_required:+.6f} (correction {correction:+.6f})")
+    print(f"                    lambda=0 {lam0:+.6f}   lambda=1 {lam1:+.6f}")
+    if abs(lam0 - ref_total) > 1e-4 or abs(lam1 - mut_total) > 1e-4:
+        raise RuntimeError(
+            f"charge closure failed: lambda=0 {lam0:+.6f} (want {ref_total:+.6f}), "
+            f"lambda=1 {lam1:+.6f} (want {mut_total:+.6f})")
+
     # --- Build hybrid rtf ---
     nh_ref_name = "H17"
     nh_type = mut_typ[nh_H]
-    mut_atom = {a[0]: a for a in mut["atoms"]}
-    nh_chg = mut_atom[nh_H][2]
+    nh_chg = appear_chg[nh_H]
 
     masses = dict(ref["mass"])
     if nh_type not in masses:
         masses[nh_type] = mut["mass"].get(nh_type, 1.008)
 
+    # RESI's charge field is the arithmetic sum of the ATOM records below. That
+    # is not a physical state (both ligands are present at once); the two
+    # endpoint sums printed above are the ones that matter.
+    hybrid_total = core_total + vanish_total + sum(appear_chg.values())
     lines = ["* Dual-topology hybrid ligand (6I5I: N-CH3 -> N-H)", "*", "   99   1"]
     for i, (t, m) in enumerate(sorted(masses.items()), 1):
         lines.append(f"MASS {i:4d} {t:<5s} {m:10.6f}")
     lines.append("")
-    lines.append("RESI UNL  0.000")
+    lines.append(f"RESI UNL {hybrid_total: .6f}")
     lines.append("GROUP")
     for name, typ, chg in ref["atoms"]:
         lines.append(f"ATOM {name:<5s} {typ:<5s} {chg: .6f}")
