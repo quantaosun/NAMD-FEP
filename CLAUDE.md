@@ -41,6 +41,14 @@ Calculates ΔΔG of binding for small molecule ligands against a protein target.
     them — the 6I5I `protein.pdb` that produced the published result has **zero**
     hydrogens, and an earlier version of this validator wrongly rejected it.
     Ligand hydrogens *are* required (all-atom input is a contract term).
+  - `../serve_ui.py` (repo root) — **the AI Studio deployment entry point.**
+    AI Studio's model is "write service code in a Python file in the project,
+    then click 部署 at the top" — it does not pick up a server started from a
+    shell. This file is what the deploy button consumes: it exposes the WSGI
+    callable as a module-level `app` (for platforms that import it) and also
+    runs a server when executed. Token resolution is env `FEP_WEB_TOKEN` →
+    `~/.fep_web_token` → generate-and-persist, so a bookmarked URL survives a
+    redeploy (`/tmp` does not survive the container being recycled).
   - `app.py` — the Flask UI. Session-scoped by design (you start it when the GPU
     box is up), so there is no user database and no permanent-URL handling.
     `python3 -m fep_web.app --root . --port 8080 --host 0.0.0.0 [--token X]`.
