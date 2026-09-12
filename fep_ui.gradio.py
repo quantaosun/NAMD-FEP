@@ -21,7 +21,26 @@ from pathlib import Path
 
 import gradio as gr
 
-ROOT = Path(__file__).resolve().parent
+def _find_repo() -> Path:
+    """Locate the directory containing `fep_web`.
+
+    This file may be run from the repo or from a copy/symlink in the project
+    root (/home/aistudio), because AI Studio's deploy dialog resolves paths
+    against `jupyter_root_dir`. Searching rather than assuming
+    `Path(__file__).parent` keeps both working.
+    """
+    here = Path(__file__).resolve().parent
+    candidates = [here,
+                  here / "work" / "NAMD-FEP",
+                  Path.home() / "work" / "NAMD-FEP",
+                  Path("/home/aistudio/work/NAMD-FEP")]
+    for cand in candidates:
+        if (cand / "fep_web").is_dir():
+            return cand
+    return here
+
+
+ROOT = _find_repo()
 sys.path.insert(0, str(ROOT))
 
 from fep_web import jobs, preflight, results          # noqa: E402
