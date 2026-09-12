@@ -289,20 +289,28 @@ python3 fep_run.py assemble solvent md_forward
 python3 fep_run.py assemble solvent md_backward
 ```
 
-#### BAR 求 ΔΔG（在仓库根目录，`fep_pipeline` 在那里）
+#### BAR 求 ΔΔG
 
 ```bash
-# --- from: /home/aistudio/work/NAMD-FEP
-cd /home/aistudio/work/NAMD-FEP
-python3 -m fep_pipeline.analysis \
-   6I5I_DUAL_FEP/complex/md_forward_combined.fepout \
-   6I5I_DUAL_FEP/complex/md_backward_combined.fepout \
-   --solvent-forward  6I5I_DUAL_FEP/solvent/md_forward_combined.fepout \
-   --solvent-backward 6I5I_DUAL_FEP/solvent/md_backward_combined.fepout \
-   --temp 300 --label 6I5I_12H_desmethyl
+# --- from: /home/aistudio/work/NAMD-FEP/6I5I_DUAL_FEP
+cd /home/aistudio/work/NAMD-FEP/6I5I_DUAL_FEP
+
+# 推荐：完整审计（解析器校验 + BAR + 迟滞 + 平稳性 + block bootstrap 误差棒）
+python3 audit_fep.py
+
+# 只要一个数：
+python3 analyze_fep.py bar \
+   complex/md_forward_combined.fepout complex/md_backward_combined.fepout \
+   solvent/md_forward_combined.fepout solvent/md_backward_combined.fepout
 ```
 
-更多选项（`--json` 等）用 `python3 -m fep_pipeline.analysis --help` 查看。
+> ⚠️ **不要用 `fep_pipeline.analysis`——已于 2026-09-12 删除。**
+> 它的正则是贪婪匹配，抓到的是累计值 `net change until now` 而不是每窗口的值，
+> 实测给出 −16.821（真值 −5.455），而且看起来像个正常结果。
+>
+> ⚠️ `analyze_fep.py` / `audit_fep.py` 默认会**丢弃每个窗口的前 99 个样本**
+> （`alchEquilSteps 50000` ÷ `alchOutFreq 500` 的平衡段）。NAMD 自身的
+> `dE_avg`/`dG` 列也只统计平衡之后的 401 个样本。想复现旧行为用 `--no-trim`。
 
 ### 3.9 监控与恢复规则
 

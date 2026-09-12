@@ -142,36 +142,58 @@ Also see: “Gotchas learned (6I5I prep)” below (temperature vs binvelocities 
 Maestro, and LigParGen with a single local workflow. It generates everything
 needed to run an RBFE simulation with NAMD + VMD + Python.
 
-**Key modules:**
-| Module | Purpose |
-|--------|---------|
-| `alignment.py` | Ligand alignment (Kabsch), hybrid PDB, FEP file generation |
-| `namd_config.py` | NAMD config generation, lambda schedules, GPU command builder |
-| `system_builder.py` | VMD Tcl script generation for psfgen/solvate/ionize |
-| `fep_file.py` | FEP file builder (B-factor column marking λ-dependence) |
-| `analysis.py` | Parse .fepout files, BAR analysis, ΔΔG computation |
-| `ligand_param.py` | Ligand parameterization (OpenMM/GAFF or Antechamber) |
-| `prepare_fep.py` | Main orchestrator + CLI |
+### ⚠️ Status: NOT WORKING — do not use `run` (audited 2026-09-12)
 
-**Usage:**
+This package has **never been run end-to-end**. There is no `fep_status.json`, no
+output directory, no test, no packaging metadata, and no git history before the
+2026-09-12 safety commit. An audit found three independent breaks in the `run`
+path, so the command below does not work:
+
+1. `system_builder.py:60-62` passes `.prm` **parameter** files and the hybrid
+   **PDB** to psfgen's `topology` command and emits no `parameters` lines at all
+   — it cannot produce a PSF. (Compare the working `6I5I_DUAL_FEP/build_system.py:59-60`,
+   which correctly does `topology top_all36_prot.rtf` + `topology hybrid.rtf`.)
+2. `prepare_fep.py:339` writes `alchFile ionized_{leg}.fep`, but nothing in the
+   package ever generates that file — NAMD would die on startup.
+3. `fep_file.build_system_fep`, the function that *would* generate it, is defined
+   and never called anywhere.
+
+`ligand_param.py` is unreachable code and would crash if called (`structure.save(
+..., format="charmm_rtf")` — ParmEd has no such format). `system_builder.py`
+re-reads the whole protein PDB per chain, duplicating atoms on multi-chain input.
+
+**What is actually salvageable:** `alignment.py` (pure-stdlib Horn–Kabsch
+superposition + B-factor marking) and the `namd_config.py` templates — the latter
+still emit `set temp` alongside `binvelocities` in the NPT/production templates,
+i.e. the restart-chain bug recorded below.
+
+**`analysis.py` was deleted 2026-09-12.** It returned *wrong numbers*, not zeros:
+its greedy regex `re.search(r"Free energy change.*is\s+([-\d.]+)")` captured the
+cumulative `net change until now` instead of the per-window value. Measured on
+`6I5I_DUAL_FEP/complex/md_forward.fepout`: **−16.821 where the truth is −5.455**
+(5 of 6 windows wrong). Use `6I5I_DUAL_FEP/audit_fep.py` instead.
+
+**Key modules (reality, not aspiration):**
+| Module | Status |
+|--------|--------|
+| `alignment.py` | real, usable — pure stdlib Kabsch + hybrid B-factor marking |
+| `namd_config.py` | real templates; needs the restart-chain `temperature` fix |
+| `system_builder.py` | **broken** — psfgen script is invalid |
+| `fep_file.py` | real code, **never called** |
+| `ligand_param.py` | dead code, would crash |
+| `prepare_fep.py` | CLI is wired; the `run` path is not |
+| ~~`analysis.py`~~ | **deleted** — returned double-counted ΔG |
+
+**Usage that does work** (ligand alignment only):
 ```bash
-# Full pipeline (needs VMD installed)
-python -m fep_pipeline run \
-    --protein protein.pdb \
-    --ligand-a ref.pdb --ligand-b mut.pdb \
-    --workdir ./fep_run
-
-# Align ligands only
 python -m fep_pipeline align --reference ref.pdb --mobile mut.pdb --output aligned.pdb
+```
 
-# Hybrid PDB + FEP file only
-python -m fep_pipeline hybrid --ligand-a ref.pdb --ligand-b mut.pdb \
-    --output hybrid.pdb --fep-output ligand.fep
-
-# Analyze results
-python -m fep_pipeline.analysis complex/md_forward.fepout complex/md_backward.fepout \
-    --solvent-forward solvent/md_forward.fepout \
-    --solvent-backward solvent/md_backward.fepout
+The 6I5I work never used this package at all — `grep -rn fep_pipeline
+6I5I_DUAL_FEP/` returns nothing. For ΔΔG analysis use:
+```bash
+python3 6I5I_DUAL_FEP/audit_fep.py          # full audit + error bars
+python3 6I5I_DUAL_FEP/analyze_fep.py bar <cf> <cb> <sf> <sb>
 ```
 
 **Requirements:** Python 3.8+, numpy, scipy, VMD (for system building),
@@ -243,7 +265,14 @@ originals backed up in `~/fftw-orig/`.
 - **Iluvatar/CoreX** — this box is a standard NVIDIA V100 + CUDA 11.8 (see GPU section).
 
 ## Recent Commits (this repo)
+- `028cf21` — Fix analyze_fep.py equilibration bias (ΔΔG −0.057 → −0.106); guard run_all.sh (2026-09-12)
+- `e4d0adf` — Safety checkpoint: bring untracked operational code under version control (2026-09-12)
 - `089aabb` — Fix NAMD FEP configs: alchDecouple off for RBFE, non-zero alchEquilSteps for ParseFEP, shell portability (2026-07-29)
+  - ⚠️ The commit subject is misleading: **`alchDecouple off` is NAMD's default**
+    (`SimParameters.C:1250-1251`, `&alchDecouple, FALSE`), as are
+    `alchElecLambdaStart 0.5` and `alchVdwLambdaEnd 1.0`. Nothing was tuned. See
+    `6I5I_DUAL_FEP/DDG_preliminary.md` §7.2 for what the flag actually controls
+    versus what the original rationale claimed.
 - Previous: README updates, visualization, CHARMM-GUI inputs
 
 ## 6I5I_DUAL_FEP — dual-topology RBFE prep (no FEPrepare, no RDKit)
