@@ -157,6 +157,37 @@ class TestAuth(AppCase):
         self.assertEqual(stranger.get("/").status_code, 401)
 
 
+class TestServingPrefix(AppCase):
+    """AI Studio documents the URL as <project>/api_serving/8080 and may or may
+    not strip that prefix before forwarding. Both must work."""
+
+    def test_path_with_serving_prefix_reaches_the_app(self):
+        client = self.client(_make_root(self.tmp))
+        r = client.get("/api_serving/8080/")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(b"NAMD RBFE", r.data)
+
+    def test_prefixed_detail_route(self):
+        client = self.client(_make_root(self.tmp))
+        r = client.get(f"/api_serving/8080/system/{SYSTEM}")
+        self.assertEqual(r.status_code, 200)
+
+    def test_links_stay_behind_the_proxy(self):
+        """url_for must keep the prefix, or every link breaks after one click."""
+        client = self.client(_make_root(self.tmp))
+        html = client.get("/api_serving/8080/").data.decode()
+        self.assertIn("/api_serving/8080/system/", html)
+
+    def test_unprefixed_paths_still_work(self):
+        client = self.client(_make_root(self.tmp))
+        self.assertEqual(client.get("/").status_code, 200)
+
+    def test_lookalike_segment_is_not_stripped(self):
+        """/api_serving/abc is not our prefix and must not be mangled."""
+        client = self.client(_make_root(self.tmp))
+        self.assertEqual(client.get("/api_serving/abc/").status_code, 404)
+
+
 class TestApi(AppCase):
     def test_gpu_endpoint(self):
         d = json.loads(self.client(_make_root(self.tmp)).get("/api/gpu").data)

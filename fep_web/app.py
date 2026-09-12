@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import secrets
 from pathlib import Path
 
@@ -30,6 +31,35 @@ from .state import WINDOWS, read_state
 
 DEFAULT_PORT = 8080          # the port AI Studio's service proxy documents
 MARKER = "fep_run.py"        # a directory with this is a prepared system
+
+
+class _StripServingPrefix:
+    """WSGI middleware: tolerate a deployment prefix the proxy does not strip.
+
+    AI Studio's service deployment documents the URL as
+    `<project>/api_serving/8080`, but does not guarantee the proxy strips that
+    prefix before forwarding. If it does not, the app sees PATH_INFO of
+    `/api_serving/8080/...` and every route 404s -- a confusing failure that
+    looks like the app is down.
+
+    Stripping it unconditionally is safe either way: when the proxy *has*
+    already stripped it the prefix is simply absent and this is a no-op. The
+    original value is preserved in SCRIPT_NAME so url_for() still builds
+    correct links behind the proxy.
+    """
+
+    _RE = re.compile(r"^/api_serving/\d+")
+
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        path = environ.get("PATH_INFO", "")
+        m = self._RE.match(path)
+        if m:
+            environ["SCRIPT_NAME"] = environ.get("SCRIPT_NAME", "") + m.group(0)
+            environ["PATH_INFO"] = path[m.end():] or "/"
+        return self.wsgi_app(environ, start_response)
 
 
 def discover_systems(root: Path) -> dict[str, Path]:
@@ -45,6 +75,7 @@ def create_app(root: Path, token: str | None = None, smi: str = "nvidia-smi") ->
     root = Path(root).resolve()
     app = Flask(__name__)
     app.secret_key = secrets.token_hex(16)      # flash messages only; ephemeral
+    app.wsgi_app = _StripServingPrefix(app.wsgi_app)
     app.config["SYSTEMS_ROOT"] = root
     app.config["TOKEN"] = token
     app.config["SMI"] = smi
