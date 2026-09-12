@@ -30,6 +30,17 @@ Calculates ΔΔG of binding for small molecule ligands against a protein target.
   - `results.py` — runs the system's own `analyze_fep.py bar … --json` and parses
     the JSON. Nothing scrapes human-readable stdout; `analyze_fep.py` gained a
     `--json` flag for this.
+  - `contract.py` — **the upload contract.** Rather than generalise the prep
+    scripts, users must supply a fixed layout and the backend runs the existing
+    pipeline on it: `system.json` + `protein.pdb` + `ref.<sdf|mol2|pdb>` +
+    `mut.<sdf|mol2|pdb>`, ligands all-atom. `acpype` (installed, with bundled
+    AmberTools) turns the ligand structures into the CHARMM rtf/prm that
+    `prepare_hybrid.py` consumes.
+    Deliberately does NOT require protein hydrogens: `build_system.py` feeds the
+    protein to psfgen as `segment { pdb ... }` + `guesscoord`, so psfgen adds
+    them — the 6I5I `protein.pdb` that produced the published result has **zero**
+    hydrogens, and an earlier version of this validator wrongly rejected it.
+    Ligand hydrogens *are* required (all-atom input is a contract term).
   - `app.py` — the Flask UI. Session-scoped by design (you start it when the GPU
     box is up), so there is no user database and no permanent-URL handling.
     `python3 -m fep_web.app --root . --port 8080 --host 0.0.0.0 [--token X]`.

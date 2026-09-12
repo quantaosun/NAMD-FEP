@@ -136,6 +136,26 @@ class TestAuth(AppCase):
     def test_no_token_configured_is_open(self):
         self.assertEqual(self.client(_make_root(self.tmp)).get("/").status_code, 200)
 
+    def test_token_survives_navigation_via_session(self):
+        """In-page links cannot carry the token, so auth must stick.
+
+        Without this, clicking from the dashboard into a system would 401 and
+        the UI would be unusable behind a token.
+        """
+        client = self.client(_make_root(self.tmp), token="s3cret")
+        self.assertEqual(client.get("/?token=s3cret").status_code, 200)
+        # subsequent requests carry only the session cookie
+        self.assertEqual(client.get("/").status_code, 200)
+        self.assertEqual(client.get(f"/system/{SYSTEM}").status_code, 200)
+        self.assertEqual(client.get("/api/gpu").status_code, 200)
+
+    def test_session_is_not_shared_with_unauthenticated_client(self):
+        root = _make_root(self.tmp)
+        good = self.client(root, token="s3cret")
+        good.get("/?token=s3cret")
+        stranger = self.client(root, token="s3cret")
+        self.assertEqual(stranger.get("/").status_code, 401)
+
 
 class TestApi(AppCase):
     def test_gpu_endpoint(self):

@@ -22,7 +22,7 @@ import secrets
 from pathlib import Path
 
 from flask import (Flask, abort, flash, jsonify, redirect, render_template,
-                   request, url_for)
+                   request, session, url_for)
 
 from . import jobs, results
 from .gpu import preflight
@@ -72,9 +72,14 @@ def create_app(root: Path, token: str | None = None, smi: str = "nvidia-smi") ->
             return None
         supplied = (request.headers.get("X-FEP-Token")
                     or request.args.get("token"))
-        if supplied != want:
-            abort(401, description="missing or wrong token")
-        return None
+        if supplied == want:
+            # Remember it, or every in-page link (which cannot carry the token)
+            # would bounce back to 401 and the UI would be unusable.
+            session["authed"] = True
+            return None
+        if session.get("authed"):
+            return None
+        abort(401, description="missing or wrong token")
 
     # -- views ------------------------------------------------------------
     @app.route("/")
