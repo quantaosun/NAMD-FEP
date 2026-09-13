@@ -82,13 +82,17 @@ RING = 1.4            # ~2px surface ring on markers
 GRID_LW = 0.7         # ~1px hairline
 
 
+def load_legs(root: Path) -> dict:
+    """Per-window production dE for every leg and direction."""
+    return {leg: {d: audit_fep.collect_leg(
+        root, leg, "forward" if d == "fwd" else "backward")
+        for d in ("fwd", "bwd")}
+        for leg in ("complex", "solvent")}
+
+
 def load_data(root: Path):
     """Per-window BAR for both legs — the same call path audit_fep.py uses."""
-    legs = {}
-    for leg in ("complex", "solvent"):
-        legs[leg] = {d: audit_fep.collect_leg(
-            root, leg, "forward" if d == "fwd" else "backward")
-            for d in ("fwd", "bwd")}
+    legs = load_legs(root)
     per = {}
     total = {}
     for leg in ("complex", "solvent"):

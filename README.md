@@ -107,7 +107,9 @@ NAMD-FEP/
 ├── toppar/                    CHARMM36 parameters (only the 7 files actually read)
 ├── docs/
 │   ├── plot_banner.py         renders the banner above from the run output
-│   └── banner-{light,dark}.png
+│   ├── plot_diagnostics.py    renders the convergence checks in §5
+│   ├── banner-{light,dark}.png
+│   └── diagnostics-{light,dark}.png
 └── 6I5I_DUAL_FEP/             the worked example — see §5
     ├── inputs/                protein.pdb + ref/mut ligand (mol2, pdb, rtf, prm)
     ├── prepare_hybrid.py      ① build the dual-topology hybrid ligand
@@ -386,7 +388,8 @@ analysis does not:
    30 forward windows they agree to **7 × 10⁻⁶ kcal/mol**.
 
 It also reports hysteresis, first-half-vs-second-half stationarity, σ(dE)/kT
-overlap, and a moving-block bootstrap error on ΔΔG.
+overlap, and a moving-block bootstrap error on ΔΔG — the first two are plotted
+per window in the [convergence checks](#convergence-checks).
 
 ### `analyze_fep.py` — quick estimators
 
@@ -469,15 +472,44 @@ the methylated and desmethyl ligands. That is a legitimate result — and for a
 single methyl → H perturbation with only 500 ps per window, it is the expected
 one.
 
+### Convergence checks
+
+The BAR estimate above *combines* forward and backward into one number, so it
+hides whether the two directions actually agree. Two per-window checks answer
+that, and both are what `audit_fep.py` reports in its sections C and E:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagnostics-dark.png">
+  <img alt="Two bar charts over the 15 lambda windows. Left: hysteresis per window, forward plus backward, up to 0.3 kcal/mol per window in both directions but summing to only +0.059 for complex and -0.092 for solvent. Right: stationarity per window, BAR of the second half minus the first half, showing the complex leg accumulating +0.365 kcal/mol of drift with a single +0.258 spike at window 11, while the solvent leg stays flat at -0.006."
+       src="docs/diagnostics-light.png">
+</picture>
+
+*Rendered by [`docs/plot_diagnostics.py`](docs/plot_diagnostics.py) from the same
+`fepout` files; the totals reproduce `audit_fep.py` exactly.*
+
+**Left — hysteresis.** The two directions are independent estimates of the same
+transformation, so a perfectly reversible window sums to zero. Per window they
+disagree by up to **±0.3 kcal/mol**, but the disagreement changes sign and
+largely cancels: **+0.059** for the complex leg and **−0.092** for solvent. Both
+are small, so the legs are reasonably reversible — this is *not* where the
+problem is.
+
+**Right — stationarity.** Whether each window has stopped drifting:
+BAR(second half) − BAR(first half). The solvent leg is flat, summing to **−0.006**.
+The complex leg is not: it accumulates **+0.365 kcal/mol**, and a single window
+(11, λ ≈ 0.8) contributes **+0.258** of that. Those windows are still
+equilibrating across a 500 ps production window, which is the under-sampling
+item 2 below.
+
 ### Why the number is fragile (read before quoting it)
 
 1. **It is a near-cancellation of two ~2.3 kcal/mol halves that flip sign at
    λ ≈ 0.5.** Σ per-window ΔΔG ≈ −2.37 (λ < 0.5) + 2.26 (λ > 0.5). λ = 0.5 is
    exactly `alchElecLambdaStart` — where the methyl's charge finishes vanishing
    and the N–H's begins appearing. The cancellation is structural, not a bug.
-2. **The complex leg is not stationary.** Σ[second half − first half] = **+0.365**
-   kcal/mol (solvent: −0.007). The largest single window contributes +0.258. It is
-   still drifting across the 500 ps window — i.e. under-equilibrated.
+2. **The complex leg is not stationary** — see the right panel of the
+   convergence checks above. It is still drifting across the 500 ps window,
+   i.e. under-equilibrated. The solvent leg is fine.
 3. **The answer moves ±0.1 kcal/mol with the trim alone**: −0.057 (trim 0),
    −0.141 (trim 150), +0.067 (trim 300). That systematic is the same size as the
    statistical error.
