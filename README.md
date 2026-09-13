@@ -1,6 +1,15 @@
 # Relative Binding Free Energy (RBFE) with NAMD
 
-<img width="1489" height="590" alt="hybrid ligand systems" src="https://github.com/user-attachments/assets/a8d4088a-076c-4ca0-92fa-ca8235001ee7" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/banner-dark.png">
+  <img alt="Two panels of real 6I5I output. Left: per-lambda-window free energy change for the complex and solvent legs, both negative below lambda 0.5 and positive above it. Right: the cumulative difference converging to ddG = -0.106 kcal/mol, with a 95% confidence interval of [-0.355, +0.118] straddling zero."
+       src="docs/banner-light.png">
+</picture>
+
+*Every number above is recomputed from this repository's own run output — the
+per-λ-window `.fepout` files — by [`docs/plot_banner.py`](docs/plot_banner.py),
+through the same extraction the quoted result uses. Re-run it and the figure
+follows the data.*
 
 A complete, **command-line** workflow for computing the relative binding free
 energy (ΔΔG) of two similar ligands against the same protein target, using
@@ -16,7 +25,7 @@ per-λ-window run driver, and two independent analysers.
 
 **The general procedure is §1–§7** and works for any protein + ligand pair. It
 is walked through end to end on a real system in
-[§8, the worked example](#8-worked-example--6i5i-clk1).
+[§5, the worked example](#5-worked-example--6i5i-clk1).
 
 > 中文版: [NAMD_RBFE_Guide_zh.md](NAMD_RBFE_Guide_zh.md) — the same workflow in
 > Chinese, including notes on running this on Baidu AI Studio.
@@ -96,7 +105,10 @@ NAMD-FEP/
 ├── NAMD_RBFE_Guide_zh.md      Chinese companion guide
 ├── LICENSE                    MIT
 ├── toppar/                    CHARMM36 parameters (only the 7 files actually read)
-└── 6I5I_DUAL_FEP/             the worked example — see §8
+├── docs/
+│   ├── plot_banner.py         renders the banner above from the run output
+│   └── banner-{light,dark}.png
+└── 6I5I_DUAL_FEP/             the worked example — see §5
     ├── inputs/                protein.pdb + ref/mut ligand (mol2, pdb, rtf, prm)
     ├── prepare_hybrid.py      ① build the dual-topology hybrid ligand
     ├── build_system.py        ② psfgen → solvate → ionize (complex + solvent)
