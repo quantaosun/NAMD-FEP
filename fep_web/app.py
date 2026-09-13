@@ -55,6 +55,16 @@ class _StripServingPrefix:
 
     def __call__(self, environ, start_response):
         path = environ.get("PATH_INFO", "")
+
+        # A proxy that mounts us under a path announces it here (jupyter-server-
+        # proxy sets this from handlers.py:287). Setting SCRIPT_NAME is what
+        # makes url_for() emit prefixed links; without it every asset and form
+        # action is root-absolute and 404s the moment we sit behind a prefix.
+        prefix = environ.get("HTTP_X_FORWARDED_PREFIX", "")
+        if prefix:
+            environ["SCRIPT_NAME"] = (environ.get("SCRIPT_NAME", "")
+                                      + prefix.rstrip("/"))
+
         m = self._RE.match(path)
         if m:
             environ["SCRIPT_NAME"] = environ.get("SCRIPT_NAME", "") + m.group(0)

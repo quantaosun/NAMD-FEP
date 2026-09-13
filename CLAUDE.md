@@ -58,6 +58,36 @@ Calculates ΔΔG of binding for small molecule ligands against a protein target.
     runs a server when executed. Token resolution is env `FEP_WEB_TOKEN` →
     `~/.fep_web_token` → generate-and-persist, so a bookmarked URL survives a
     redeploy (`/tmp` does not survive the container being recycled).
+    ⚠️ **Do not run this on 8080 while the proxy is configured** — it squats the
+    port jupyter-server-proxy wants and `/fep/` then 500s. See RUNBOOK §10.
+  - `~/.jupyter/jupyter_server_config.py` (2026-09-12) — **how the UI is actually
+    reached from a browser.** Registers a named jupyter-server-proxy server `fep`
+    that runs `fep_web.app` on `127.0.0.1:8080` on demand. Browser URL is
+    `<WebIDE URL>/…/<id>/fep/` — **the solved path**; details, the
+    `/proxy/`-vs-named-server trap, and the ruled-out tunnels are in RUNBOOK §10.
+    The app is launched with **no `--token`**: JupyterHub's auth is the only gate.
+    ⚠️ **This path is NOT persisted — it did not survive the 2026-09-13 11:05
+    container recycle**, which took the whole deployment down (the app was fine;
+    only the route registration vanished, and it was in no git history). It now
+    lives in the repo — see `deploy/` below — and is restored by
+    `bash deploy/install_proxy_config.sh`. **Run that after every recycle.**
+  - `deploy/jupyter_server_config.py` (2026-09-13) — the named-server registration
+    above, moved **into the repo** so a recycle cannot lose it. Committed rather
+    than living only in `$HOME`. Traps encoded in its docstring (each already
+    bitten): `command` must be a **list**; there is **no `cwd` option**, so the
+    repo goes in via `PYTHONPATH`; `{port}` is `str.format` (single braces);
+    bind `127.0.0.1` so the proxy is the only way in; `FEP_WEB_TOKEN` is forced
+    **empty** so an inherited token cannot silently start demanding `?token=`.
+  - `deploy/install_proxy_config.sh` (2026-09-13) — installs/restores that config;
+    `--check` verifies without changing anything. Validates the *proxy's own*
+    interpreter (`/opt/conda/envs/webide/bin/python3.7`, the only one with
+    `jupyter_server_proxy`), that `fep_web.app` imports under it, and re-parses
+    the written config — a config that fails to parse would take the **entire
+    Jupyter server** down on restart, not just the UI. Installing is safe while a
+    session is live: the config is inert until the server restarts.
+    ⚠️ Verifying a redeploy needs a **browser**, not `curl`: an unauthenticated
+    request to `/fep/` returns **302** whether or not the route exists, because
+    JupyterHub's login redirect runs before route resolution.
   - `app.py` — the Flask UI. Session-scoped by design (you start it when the GPU
     box is up), so there is no user database and no permanent-URL handling.
     `python3 -m fep_web.app --root . --port 8080 --host 0.0.0.0 [--token X]`.

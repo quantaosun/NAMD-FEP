@@ -234,31 +234,109 @@ GPU.
 
 ---
 
-## 10. Exposing the UI — current state (2026-09-12, UNRESOLVED)
+## 10. Exposing the UI — SOLVED 2026-09-12 (jupyter-server-proxy)
 
-Recorded so this is not re-derived. **The blocker is the network path off the
-box, not the app.** The app itself is verified working end to end.
+**The UI is reachable in a browser at `<your WebIDE URL>/…/<server-id>/fep/`**
+— no tunnel, no deploy button, no public IP needed. Verified working end to end
+(HTTP 200, correct `<title>NAMD RBFE — systems</title>`, assets correctly
+prefixed).
 
-### What the box permits
+### The URL
 
-Measured, not assumed:
+JupyterHub's service prefix is `/bj-cpu-01/user/696173/10639452/`, so on this
+container the path is:
+
+```
+https://<ai-studio-webide-host>/bj-cpu-01/user/696173/10639452/fep/
+```
+
+Take whatever URL is in your browser address bar when the WebIDE/Jupyter is
+open and **replace its last path segment with `fep/`** (e.g. `…/10639452/lab`
+→ `…/10639452/fep/`). The public host is terminated by AI Studio's ingress and
+is **not discoverable from inside the box** — every hostname in the logs
+(`jupyter-696173-10639452:8888`, `127.0.0.1:8888`) is internal, so read the host
+out of your own browser rather than guessing it.
+
+⚠️ **Not `/proxy/fep/`.** A *named* server is mounted at
+`ujoin(base_url, sp.name, …)` → `/<base>/fep/`. `/proxy/<name>/` is for
+jupyter-server-proxy's *unnamed* (arbitrary-port) form and 404s here.
+`/fep/` with no base prefix also 404s.
+
+### How it works
+
+`~/.jupyter/jupyter_server_config.py` registers a named proxy server `fep` that
+runs `python3.7 -m fep_web.app --host 127.0.0.1 --port 8080`. The proxy **starts
+the app on demand** (so nothing to launch by hand — and nothing to leak: the app
+binds loopback only, making the authenticated Jupyter proxy the sole way in).
+Auth is JupyterHub's own; the app runs with **no `--token`**, i.e. there is no
+second auth layer to configure.
+
+Two constraints, both already encoded in that file:
+
+* there is **no `cwd` option** (jupyter_server_proxy `config.py:115`
+  `make_server_process`) — the repo is made importable via `PYTHONPATH`;
+* `command` must be a **list**, and `{port}` is substituted by the proxy.
+
+**Do not also run `serve_ui.py` / `python3 -m fep_web.app` by hand on 8080.**
+That squats the port the proxy wants; the proxy's spawn then fails and `/fep/`
+returns **500** (with a generic Jupyter error page that does not mention the
+port). If `/fep/` 500s, check for a stray process on 8080 *first*.
+
+### ⚠️ `~/.jupyter/` does NOT survive a container recycle
+
+**This already happened.** The 2026-09-13 11:05 recycle replaced `~/.jupyter/`
+with the platform default and removed `jupyter_server_config.py`, silently
+taking the deployment down: `/fep/` stopped resolving (it now 302s to the
+JupyterHub login, and the route behind it is gone). `jupyter_server_proxy`
+itself survived — only the *registration* was lost. Nothing about the working
+setup was recoverable from git.
+
+So the config now lives **in the repo** and is restored by one command:
+
+```bash
+bash deploy/install_proxy_config.sh           # install / restore
+bash deploy/install_proxy_config.sh --check   # verify, change nothing
+```
+
+Run it after every recycle. It validates the interpreter, the extension, and
+that `fep_web.app` imports *under the proxy's own interpreter* (not the shell's
+`python3`), then writes `~/.jupyter/jupyter_server_config.py` and re-parses the
+result — a config that does not parse would take the whole Jupyter server down
+on restart, so it is checked before you get there.
+
+The file it installs is **inert until the Jupyter server restarts** (handlers
+are registered at startup), so installing while a session is live is safe — the
+route simply appears after the next WebIDE restart.
+
+> Verify a deploy **after** the restart, not before: an unauthenticated `curl`
+> to `/fep/` returns **302** either way, because JupyterHub's login redirect
+> runs before route resolution. A 302 is therefore *not* evidence the route
+> exists. Check the Jupyter log for a `404 GET .../fep/` after a real browser
+> request instead.
+
+### What was ruled out (keep, so it is not re-derived)
 
 | outbound | result |
 |---|---|
 | TCP **443** | ✅ works (GitHub, Cloudflare API, gh-proxy) |
-| TCP 22 (SSH) | ❌ blocked — no SSH tunnels (localhost.run, serveo) |
+| TCP **80** | ✅ works |
+| TCP 22 (SSH) | ❌ blocked — no SSH tunnels (localhost.run, serveo, pinggy) |
 | UDP 7844 | ❌ `operation not permitted` |
 | TCP 7844 | ❌ `i/o timeout` |
 
 **cloudflared cannot work here**: it uses port **7844 for both QUIC and
 HTTP/2**, so `--protocol http2` does not rescue it. The quick tunnel creates a
-hostname (`*.trycloudflare.com`) and then never connects.
+hostname (`*.trycloudflare.com`) and then never connects. ngrok would work
+(dials out on 443) but needs an account authtoken — unnecessary now.
 
 ### What AI Studio supports
 
-`jupyter_server_proxy` is **not installed** in the WebIDE env
-(`/opt/conda/envs/webide/bin/python3.7`), so the usual `/proxy/<port>/` path
-does not exist. Installing it needs a WebIDE restart.
+`jupyter_server_proxy` **is** installed in the WebIDE env — `3.2.4`, at
+`/home/aistudio/external-libraries/lib/python3.7/site-packages/`, and
+**enabled** (`external-libraries/etc/jupyter`). An earlier revision of this
+section claimed it was absent; that was wrong. (It is *not* present in the
+py3.10 `python35-paddle120-env`, so use the 3.7 interpreter for anything the
+proxy runs.)
 
 AI Studio's Codelab ships **`codelab_gradio_extension`** and
 **`codelab_streamlit_extension`** (confirmed in `~/.codelab-jupyter.log`) — the
@@ -279,7 +357,9 @@ the open question.
 
 | file | purpose |
 |---|---|
-| `fep_ui.gradio.py` (repo root) | **the Gradio app the deploy button wants** |
+| **`deploy/install_proxy_config.sh`** | **restore the `/fep/` route after a recycle — run this first** |
+| **`deploy/jupyter_server_config.py`** | the named-server registration, version-controlled so a recycle cannot lose it |
+| `fep_ui.gradio.py` (repo root) | the Gradio app the deploy button wants (unconfirmed, unneeded) |
 | `/home/aistudio/fep_ui.gradio.py` | symlink to the above, so it is visible from the project root |
 | `serve_ui.py` (repo root) | Flask launcher, local use only — **not** deployable |
 | `fep_web/app.py` | the Flask UI (prefix-tolerant) |
@@ -288,19 +368,37 @@ the open question.
 verified launching under **both** (3.19.1 on py3.7, 5.27.1 on py3.10), because
 which interpreter the deploy picks is not knowable in advance.
 
-### To resume
+### If `/fep/` ever breaks
 
-1. Open `fep_ui.gradio.py` in the AI Studio editor, click **部署**, and note
-   whether a file list appears and what it contains.
-2. If the deploy button does not exist → the project type is wrong; use ngrok
-   (dials out on 443, needs a free authtoken) or install `jupyter-server-proxy`
-   (WebIDE restart required).
-3. If it deploys → the URL is `<project>/api_serving/8080`; the app already
-   tolerates that prefix.
+Check these in order — the first two are 500s, the last two are 404s:
 
-### Local fallback (always works, on the box)
+1. **Something else is on 8080.** `ps -eo pid,cmd | grep -E 'serve_ui|fep_web.app'`
+   — a hand-started server makes the proxy's spawn fail with a bare 500.
+2. **The proxy's child died.** The app also runs as a *child of the Jupyter
+   server*, so the Jupyter log is where its traceback is, not `~/fep_ui.log`.
+3. **Missing base prefix** → 404. You want `/<base>/fep/`, not `/fep/` and not
+   `/proxy/fep/`.
+4. **Proxy config not loaded** → 404 on the correct path. Confirm with
+   `jupyter serverextension list` (expect `jupyter_server_proxy 3.2.4 enabled`);
+   if it is missing, the WebIDE needs a restart, since the extension list is
+   read at server start.
+
+### The 部署 button — still unconfirmed, but no longer needed
+
+Kept for reference only. The deploy handler packages a folder, uploads it to
+BOS and runs it as a *separate cloud application* — with no GPU, no `namd3` and
+no `/home/aistudio`, so a deployed UI could not see or drive the job anyway.
+That is why §10 uses jupyter-server-proxy instead. `codelab_gradio_extension`
+is still gated by `DeployNotAvailableHandler` (project type), unconfirmed.
+
+### Local fallback (on the box only, NOT for browser access)
 
 ```bash
 cd /home/aistudio/work/NAMD-FEP
 python3 -m fep_web.app --root . --port 8080 --host 0.0.0.0 --token <secret>
 ```
+
+Useful for debugging the app directly, but it **conflicts with the proxy** (see
+above) — stop it before expecting `/fep/` to work. Binding `0.0.0.0` also
+exposes the port to the LAN, which is why the proxy config deliberately uses
+`127.0.0.1`.
