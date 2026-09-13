@@ -34,3 +34,6 @@ ligand.psf
 ligand.pdb
 complex.psf
 complex.pdb
+
+# Internal working notes (not part of the published workflow)
+CLAUDE.md
