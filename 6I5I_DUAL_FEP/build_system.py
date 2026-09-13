@@ -14,14 +14,15 @@ Outputs (./complex and ./solvent): psf/pdb, *.fep, *.namd; plus ../fep.tcl.
 
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 HYB = HERE / "hybrid"
 TOPPAR = HERE.parent / "toppar"
-VMD = "/home/aistudio/vmd-env/bin/vmd"
-NAMD = "/home/aistudio/NAMD_3.0.3_Source/Linux-x86_64-g++/namd3"
+VMD = os.environ.get("VMD", "/home/aistudio/vmd-env/bin/vmd")
+NAMD = os.environ.get("NAMD", "/home/aistudio/NAMD_3.0.3_Source/Linux-x86_64-g++/namd3")
 PROT = HERE / "inputs" / "protein.pdb"
 
 # protein segments (chain A has a gap between 412 and 416)

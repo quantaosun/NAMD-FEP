@@ -10,7 +10,7 @@
 set -euo pipefail
 
 # GPU-resident build (--with-single-node-cuda). ~21x faster than the old
-# Linux-x86_64-g++ build; see CLAUDE.md "NAMD GPU-resident".
+# Linux-x86_64-g++ build; see ../README.md section 8 "Performance reference".
 NAMD=/home/aistudio/NAMD_3.0.3_Source/Linux-x86_64-g++.gpuresident/namd3
 
 # +p1 is INTENTIONAL. In GPU-resident mode throughput scales inversely with PE

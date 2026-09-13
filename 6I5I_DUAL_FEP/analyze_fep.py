@@ -214,8 +214,7 @@ def main() -> int:
                        help="keep every sample, including per-window "
                             "equilibration (pre-2026-09-12 behaviour; biased)")
         p.add_argument("--json", action="store_true",
-                       help="emit machine-readable JSON instead of a table "
-                            "(used by fep_web; nothing here scrapes stdout text)")
+                       help="emit machine-readable JSON instead of a table")
 
     e = sub.add_parser("exp", help="one-sided Zwanzig from forward data")
     e.add_argument("files", nargs="+", type=Path,

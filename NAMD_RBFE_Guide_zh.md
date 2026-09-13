@@ -149,14 +149,20 @@ cd /home/aistudio/NAMD_3.0.3_Source/Linux-x86_64-g++.gpuresident
 
 本节为**手动、逐条执行**的完整流程：每个代码块自上而下执行；两条相邻命令之间要**等上一条跑完**再执行。任何一步被中断都安全——重跑对应 `run` 命令会跳过已完成窗口、从进行中的窗口续跑。
 
-### 3.1 当前进度快照（写作于 2026-09-06 17:00）
+### 3.1 运行状态
 
-| 腿 | 进度 | 本节操作 |
-|----|------|----------|
-| complex forward | **完成**（w0–14，已组装 combined） | 跳过 |
-| complex backward | **w00–w09 完成，w10 运行中** | 用 `run complex backward` 续跑 |
-| solvent nvt / npt | nvt 有标记；npt 文件已完整（缺标记） | 跳过（不放心可重跑 npt） |
-| solvent forward / backward | 未开始 | 全新运行 |
+本示例**已跑完**：complex / solvent 双腿的 forward + backward 全部 15 个窗口
+（每窗口 250 000 步 / 500 ps）都已完成并组装。最终结果（见 §3.8）：
+
+| 量 | 值 |
+|----|----|
+| dG_complex | +3.882 kcal/mol |
+| dG_solvent | +3.988 kcal/mol |
+| **ΔΔG** | **−0.106 kcal/mol** |
+| 95% 置信区间（moving-block bootstrap） | [−0.355, +0.118] |
+
+即**与 0 无法区分**——15 × 500 ps 的采样量不足以分辨这对配体，
+详见根目录 [README §5](README.md#5-worked-example--6i5i-clk1) 的说明。
 
 > 实时状态用下面命令查询，别依赖上面的静态表：
 > ```bash
@@ -304,9 +310,10 @@ python3 analyze_fep.py bar \
    solvent/md_forward_combined.fepout solvent/md_backward_combined.fepout
 ```
 
-> ⚠️ **不要用 `fep_pipeline.analysis`——已于 2026-09-12 删除。**
-> 它的正则是贪婪匹配，抓到的是累计值 `net change until now` 而不是每窗口的值，
-> 实测给出 −16.821（真值 −5.455），而且看起来像个正常结果。
+> ⚠️ 分析**只用本仓库的 `analyze_fep.py` / `audit_fep.py`（推荐后者）**，
+> 它们直接解析 NAMD 的 `FepEnergy` 原始行。任何靠正则去抓
+> "Free energy change" 文本的做法，抓到的都是累计值 `net change until now`
+> 而不是每窗口的值：实测给出 −16.821（真值 −5.455），而且**看起来像个正常结果**。
 >
 > ⚠️ `analyze_fep.py` / `audit_fep.py` 默认会**丢弃每个窗口的前 99 个样本**
 > （`alchEquilSteps 50000` ÷ `alchOutFreq 500` 的平衡段）。NAMD 自身的

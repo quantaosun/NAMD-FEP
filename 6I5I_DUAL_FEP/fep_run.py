@@ -25,10 +25,11 @@ assemble <leg> <stage>
         by per-window k..14 -> salvage + append
 """
 from __future__ import annotations
-import argparse, json, pathlib, re, shutil, subprocess, sys
+import argparse, json, os, pathlib, re, shutil, subprocess, sys
 
 BASE = pathlib.Path(__file__).resolve().parent
-NAMD = "/home/aistudio/NAMD_3.0.3_Source/Linux-x86_64-g++.gpuresident/namd3"
+NAMD = os.environ.get(
+    "NAMD", "/home/aistudio/NAMD_3.0.3_Source/Linux-x86_64-g++.gpuresident/namd3")
 # NOTE: "+devices" and "0" must be SEPARATE argv tokens. subprocess.run passes
 # each list element verbatim, so "+devices 0" (one element w/ embedded space)
 # is NOT parsed by the Charm++ RTS -> NAMD swallows it as the config file and

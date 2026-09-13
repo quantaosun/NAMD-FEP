@@ -8,6 +8,10 @@ __pycache__/
 *.swp
 *~
 
+# Jupyter scratch (the notebook tutorial is gone, but the WebIDE still makes this)
+.virtual_documents/
+.ipynb_checkpoints/
+
 # NAMD/VMD run artifacts (regenerable / transient)
 *.coor
 *.vel

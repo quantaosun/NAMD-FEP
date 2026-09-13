@@ -66,7 +66,7 @@ ComMotion              no
 # GPU-resident integration -- requires the --with-single-node-cuda build at
 # /home/aistudio/NAMD_3.0.3_Source/Linux-x86_64-g++.gpuresident/namd3
 # (~21x faster). Run it with +p1, NOT +p8: throughput scales inversely with
-# PE count in this mode. See CLAUDE.md.
+# PE count in this mode. See "The one flag that matters most" in ../README.md.
 GPUresident            on
 
 source                 ../fep.tcl
