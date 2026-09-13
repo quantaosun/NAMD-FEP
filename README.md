@@ -12,19 +12,35 @@ through the same extraction the quoted result uses. Re-run it and the figure
 follows the data.*
 
 **The same run, checked.** The number above comes from a BAR estimate, which
-*combines* forward and backward — so it cannot show whether the two directions
-agree. These four panels do. Top: the two directions plotted against each
-other, per window. Bottom: the two checks that fall out of them — hysteresis,
-and whether each window has stopped drifting. All explained under
-[convergence checks](#convergence-checks).
+*combines* forward and backward — so on its own it cannot show whether the two
+directions agree. Two further figures answer that, each asking a single
+question. Details under [convergence checks](#convergence-checks).
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/diagnostics-dark.png">
-  <img alt="Four panels over the 15 lambda windows. Top left: complex leg, forward and backward free energy per window as two lines lying almost on top of each other, diverging at window 6 and window 12. Top right: solvent leg, the same two lines overlapping even more tightly. Bottom left: hysteresis per window for both legs, up to 0.3 kcal/mol per window in both directions but summing to only +0.059 for complex and -0.092 for solvent. Bottom right: stationarity per window, showing the complex leg accumulating +0.365 kcal/mol of drift with a single +0.258 spike at window 11, while the solvent leg stays flat at -0.006."
-       src="docs/diagnostics-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/directions-dark.png">
+  <img alt="Two panels, one per leg, each plotting free energy per window as two lines: forward and backward. On the solvent leg the two lines lie almost exactly on top of each other. On the complex leg they track closely but visibly separate at window 6 (forward -1.64 against backward -1.33) and window 12 (forward +1.20 against backward +0.91)."
+       src="docs/directions-light.png">
 </picture>
 
-*Also rendered from the run output, by
+*Do the two directions agree? Forward and backward are independent estimates of
+the same window, so they should lie on top of each other.*
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/checks-dark.png">
+  <img alt="Two bar charts over the 15 windows, one series per leg. Left, hysteresis per window: bars reaching 0.3 kcal/mol in both directions, summing to +0.059 for the complex leg and -0.092 for solvent. Right, stationarity per window: the complex leg accumulates +0.365 kcal/mol of drift with a +0.258 spike at window 11, while the solvent leg stays flat at -0.006."
+       src="docs/checks-light.png">
+</picture>
+
+*Is each window converged? Both checks should sit at zero.*
+
+> **Conclusion.** ΔΔG = −0.106 kcal/mol — indistinguishable from zero. The two
+> directions agree (hysteresis +0.059 / −0.092, inside the ±0.120 statistical
+> error), so the simulation is **reversible**. But the complex leg has **not
+> equilibrated** (+0.365 kcal/mol of drift, 3× the error, and systematic rather
+> than random). **Reversible but not converged** — a null result, not a measured
+> binding difference.
+
+*Both figures are rendered from the run output by
 [`docs/plot_diagnostics.py`](docs/plot_diagnostics.py); the totals reproduce
 `audit_fep.py` exactly.*
 
@@ -124,9 +140,10 @@ NAMD-FEP/
 ├── toppar/                    CHARMM36 parameters (only the 7 files actually read)
 ├── docs/
 │   ├── plot_banner.py         renders the banner above from the run output
-│   ├── plot_diagnostics.py    renders the convergence checks in §5
+│   ├── plot_diagnostics.py    renders the two convergence figures above
 │   ├── banner-{light,dark}.png
-│   └── diagnostics-{light,dark}.png
+│   ├── directions-{light,dark}.png   forward vs backward
+│   └── checks-{light,dark}.png       hysteresis and stationarity
 └── 6I5I_DUAL_FEP/             the worked example — see §5
     ├── inputs/                protein.pdb + ref/mut ligand (mol2, pdb, rtf, prm)
     ├── prepare_hybrid.py      ① build the dual-topology hybrid ligand
@@ -491,8 +508,9 @@ one.
 
 ### Convergence checks
 
-The two panels at the top of this README are these checks, computed per window.
-Both are also what `audit_fep.py` reports in its sections C and E.
+The two panels of the second figure at the top of this README are these checks,
+computed per window. Both are also what `audit_fep.py` reports in its sections C
+and E.
 
 **Left — hysteresis.** The two directions are independent estimates of the same
 transformation, so a perfectly reversible window sums to zero. Per window they

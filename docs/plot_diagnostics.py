@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""Render the convergence-check figure from the 6I5I run's own output.
+"""Render the convergence figures from the 6I5I run's own output.
 
-The banner answers "what is the number". This answers "should you believe it",
-which is a different question and needs two different checks, both per window:
+The banner answers "what is the number". These answer "should you believe it",
+which is two separate questions and therefore two separate figures -- one hue
+meaning per figure, never two:
+
+  directions-*.png  Do the two directions agree?  Hue = direction.
+  checks-*.png      Is each window converged?     Hue = leg. Two checks:
 
   hysteresis   EXP(forward) + EXP(backward) for the same transformation. The two
                directions are independent estimates, so a perfectly reversible
@@ -15,7 +19,7 @@ Both are recomputed here through `audit_fep`, matching its sections C and E
 exactly -- including the pairing (a backward leg stores its windows high->low,
 so forward window i pairs with backward window N-1-i).
 
-    python3 docs/plot_diagnostics.py     # writes docs/diagnostics-{light,dark}.png
+    python3 docs/plot_diagnostics.py   # writes docs/{directions,checks}-{light,dark}.png
 """
 from __future__ import annotations
 
@@ -86,12 +90,10 @@ def panel_directions(ax, t, checks, leg):
     ax.set_xticks(np.arange(0, audit_fep.NWIN, 2))
     ax.set_xlabel("$\\lambda$ window index  (0 → 14,  $\\lambda$ 0 → 1)",
                   color=t["secondary"], fontsize=10)
-    ax.set_title(f"Forward vs backward — {leg}", loc="left", pad=20,
-                 color=t["ink"], fontsize=12.5, fontweight="semibold")
-    ax.text(0, 1.025, "independent estimates of the same window; "
-            "the gap is the hysteresis",
-            transform=ax.transAxes, va="bottom", ha="left",
-            color=t["secondary"], fontsize=8.5)
+    # No per-panel subtitle: the figure's own subtitle already says what to look
+    # for, and repeating it twice costs the vertical space the lines need.
+    ax.set_title(f"{leg.capitalize()} leg", loc="left", pad=10,
+                 color=t["ink"], fontsize=13, fontweight="semibold")
     style_axes(ax, t, "$\\Delta$G per window  (kcal/mol)")
     ax.legend(loc="upper left", frameon=False, fontsize=9.5,
               labelcolor=t["secondary"], handlelength=1.2)
@@ -128,31 +130,47 @@ def panel_bars(ax, t, checks, key, title, subtitle, ylabel):
               labelcolor=t["secondary"], handlelength=1.2, ncol=1)
 
 
-def render(theme: str, out: Path, checks: dict) -> None:
+def render_directions(theme: str, out: Path, checks: dict) -> None:
+    """Figure 1: forward vs backward. One question, hue = direction."""
     t = THEMES[theme]
-    fig = plt.figure(figsize=(10, 7.0), dpi=200, facecolor=t["surface"])
-    # hspace is generous: every panel carries a title and a subtitle line above
-    # it, and the top row's x-labels need clearance from the bottom row's.
-    gs = GridSpec(2, 2, wspace=0.20, hspace=0.62, left=0.085, right=0.975,
-                  top=0.82, bottom=0.065)
+    fig = plt.figure(figsize=(10, 3.9), dpi=200, facecolor=t["surface"])
+    gs = GridSpec(1, 2, wspace=0.20, left=0.085, right=0.975,
+                  top=0.755, bottom=0.175)
 
-    fig.text(0.03, 0.965, "6I5I convergence checks", color=t["ink"],
+    fig.text(0.03, 0.945, "Do the two directions agree?", color=t["ink"],
              fontsize=17, fontweight="semibold")
-    fig.text(0.03, 0.925,
-             "What the headline number hides. The BAR estimate combines the two "
-             "directions, so it cannot show whether they agree — these do.",
+    fig.text(0.03, 0.858,
+             "Two independent estimates of the same window — the gap between "
+             "them is the error.",
              color=t["secondary"], fontsize=10.5)
 
-    # Top row: the two directions themselves. Hue here means direction.
     panel_directions(fig.add_subplot(gs[0, 0]), t, checks, "complex")
     panel_directions(fig.add_subplot(gs[0, 1]), t, checks, "solvent")
-    # Bottom row: the checks that fall out of them. Hue here means leg, so each
-    # panel carries its own legend — the hue meaning is per-panel, not global.
-    panel_bars(fig.add_subplot(gs[1, 0]), t, checks, "hyst",
+
+    fig.savefig(out, facecolor=t["surface"])
+    plt.close(fig)
+    print(f"wrote {out}")
+
+
+def render_checks(theme: str, out: Path, checks: dict) -> None:
+    """Figure 2: the two per-window checks. One question, hue = leg."""
+    t = THEMES[theme]
+    fig = plt.figure(figsize=(10, 4.6), dpi=200, facecolor=t["surface"])
+    gs = GridSpec(1, 2, wspace=0.20, left=0.085, right=0.975,
+                  top=0.72, bottom=0.135)
+
+    fig.text(0.03, 0.945, "Is each window converged?", color=t["ink"],
+             fontsize=17, fontweight="semibold")
+    fig.text(0.03, 0.878,
+             "Both checks should sit at zero. The solvent leg does; the complex "
+             "leg does not.",
+             color=t["secondary"], fontsize=10.5)
+
+    panel_bars(fig.add_subplot(gs[0, 0]), t, checks, "hyst",
                "Hysteresis per window",
                "EXP(forward) + EXP(backward)   —   0 = perfectly reversible",
                "$\\Delta$G  (kcal/mol)")
-    panel_bars(fig.add_subplot(gs[1, 1]), t, checks, "drift",
+    panel_bars(fig.add_subplot(gs[0, 1]), t, checks, "drift",
                "Stationarity per window",
                "BAR(second half) − BAR(first half)   —   0 = equilibrated",
                "$\\Delta\\Delta$G  (kcal/mol)")
@@ -174,7 +192,8 @@ def main() -> int:
             f"{leg} {sum(checks[leg][key]):+.4f}" for leg in ("complex", "solvent")))
 
     for theme in ("light", "dark"):
-        render(theme, a.out_dir / f"diagnostics-{theme}.png", checks)
+        render_directions(theme, a.out_dir / f"directions-{theme}.png", checks)
+        render_checks(theme, a.out_dir / f"checks-{theme}.png", checks)
     return 0
 
 
