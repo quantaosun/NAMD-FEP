@@ -11,6 +11,22 @@ per-λ-window `.fepout` files — by [`docs/plot_banner.py`](docs/plot_banner.py
 through the same extraction the quoted result uses. Re-run it and the figure
 follows the data.*
 
+**The same run, checked.** The number above comes from a BAR estimate, which
+*combines* forward and backward — so it cannot show whether the two directions
+agree. These two panels do: hysteresis per window, and whether each window has
+stopped drifting. Both are explained under
+[convergence checks](#convergence-checks).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagnostics-dark.png">
+  <img alt="Two bar charts over the 15 lambda windows. Left: hysteresis per window, forward plus backward, up to 0.3 kcal/mol per window in both directions but summing to only +0.059 for complex and -0.092 for solvent. Right: stationarity per window, BAR of the second half minus the first half, showing the complex leg accumulating +0.365 kcal/mol of drift with a single +0.258 spike at window 11, while the solvent leg stays flat at -0.006."
+       src="docs/diagnostics-light.png">
+</picture>
+
+*Also rendered from the run output, by
+[`docs/plot_diagnostics.py`](docs/plot_diagnostics.py); the totals reproduce
+`audit_fep.py` exactly.*
+
 A complete, **command-line** workflow for computing the relative binding free
 energy (ΔΔG) of two similar ligands against the same protein target, using
 NAMD's alchemical free-energy perturbation.
@@ -474,18 +490,8 @@ one.
 
 ### Convergence checks
 
-The BAR estimate above *combines* forward and backward into one number, so it
-hides whether the two directions actually agree. Two per-window checks answer
-that, and both are what `audit_fep.py` reports in its sections C and E:
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/diagnostics-dark.png">
-  <img alt="Two bar charts over the 15 lambda windows. Left: hysteresis per window, forward plus backward, up to 0.3 kcal/mol per window in both directions but summing to only +0.059 for complex and -0.092 for solvent. Right: stationarity per window, BAR of the second half minus the first half, showing the complex leg accumulating +0.365 kcal/mol of drift with a single +0.258 spike at window 11, while the solvent leg stays flat at -0.006."
-       src="docs/diagnostics-light.png">
-</picture>
-
-*Rendered by [`docs/plot_diagnostics.py`](docs/plot_diagnostics.py) from the same
-`fepout` files; the totals reproduce `audit_fep.py` exactly.*
+The two panels at the top of this README are these checks, computed per window.
+Both are also what `audit_fep.py` reports in its sections C and E.
 
 **Left — hysteresis.** The two directions are independent estimates of the same
 transformation, so a perfectly reversible window sums to zero. Per window they
