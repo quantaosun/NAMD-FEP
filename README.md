@@ -13,13 +13,14 @@ follows the data.*
 
 **The same run, checked.** The number above comes from a BAR estimate, which
 *combines* forward and backward — so it cannot show whether the two directions
-agree. These two panels do: hysteresis per window, and whether each window has
-stopped drifting. Both are explained under
+agree. These four panels do. Top: the two directions plotted against each
+other, per window. Bottom: the two checks that fall out of them — hysteresis,
+and whether each window has stopped drifting. All explained under
 [convergence checks](#convergence-checks).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagnostics-dark.png">
-  <img alt="Two bar charts over the 15 lambda windows. Left: hysteresis per window, forward plus backward, up to 0.3 kcal/mol per window in both directions but summing to only +0.059 for complex and -0.092 for solvent. Right: stationarity per window, BAR of the second half minus the first half, showing the complex leg accumulating +0.365 kcal/mol of drift with a single +0.258 spike at window 11, while the solvent leg stays flat at -0.006."
+  <img alt="Four panels over the 15 lambda windows. Top left: complex leg, forward and backward free energy per window as two lines lying almost on top of each other, diverging at window 6 and window 12. Top right: solvent leg, the same two lines overlapping even more tightly. Bottom left: hysteresis per window for both legs, up to 0.3 kcal/mol per window in both directions but summing to only +0.059 for complex and -0.092 for solvent. Bottom right: stationarity per window, showing the complex leg accumulating +0.365 kcal/mol of drift with a single +0.258 spike at window 11, while the solvent leg stays flat at -0.006."
        src="docs/diagnostics-light.png">
 </picture>
 
