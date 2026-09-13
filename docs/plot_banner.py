@@ -71,12 +71,15 @@ THEMES = {
 }
 
 # Mark specs from the same reference: 2px line, >=8px markers, hairline solid
-# grid. The figure is 15in wide and READMEs show it at ~1500px, so 1pt here is
-# 2 screen px and the spec values convert as below.
-LW = 1.5              # 2px line
-MS = 6.0              # 8px marker
-RING = 1.4            # 2px surface ring on markers
-GRID_LW = 0.7         # 1px hairline
+# grid. The figure is 10in wide because GitHub renders a README image at roughly
+# its content width (~1000px); at that display size 1pt here is ~1.4 screen px,
+# so 9pt ticks land at ~12px and the marks land on spec. Sizing the figure for
+# 15in instead would shrink those ticks to ~7px and the banner would be
+# unreadable at the width it actually appears.
+LW = 1.5              # ~2px line
+MS = 6.0              # ~8px marker
+RING = 1.4            # ~2px surface ring on markers
+GRID_LW = 0.7         # ~1px hairline
 
 
 def load_data(root: Path):
@@ -126,8 +129,11 @@ def panel_profiles(ax, t, lam, per):
                 va="bottom", ha="left", color=t["muted"], fontsize=9)
     ax.set_xlim(-0.02, 1.02)
     ax.set_xlabel("$\\lambda$ (window midpoint)", color=t["secondary"], fontsize=10)
-    ax.set_title("Per-window free energy change", color=t["ink"],
-                 fontsize=13, fontweight="semibold", loc="left", pad=10)
+    # Placed manually rather than via set_title so both panels' titles land on
+    # the same line even though the right panel carries an extra header line.
+    ax.text(0, 1.13, "Per-window free energy change", transform=ax.transAxes,
+            va="bottom", ha="left", color=t["ink"], fontsize=13,
+            fontweight="semibold")
     style_axes(ax, t, "$\\Delta$G per window  (kcal/mol)")
     leg = ax.legend(loc="upper left", frameon=False, fontsize=10,
                     labelcolor=t["secondary"], handlelength=1.6)
@@ -156,39 +162,40 @@ def panel_cumulative(ax, t, lam, per, total, ci_lo, ci_hi):
     # The value block goes in the top-left: the curve dives away from it
     # immediately, so that corner stays empty, and the endpoint is left to the
     # error bar itself rather than being crowded by a label.
-    ax.text(0.03, 0.97, f"$\\Delta\\Delta$G = {ddg:+.3f} kcal/mol",
-            transform=ax.transAxes, ha="left", va="top",
-            color=t["ink"], fontsize=12, fontweight="semibold")
-    ax.text(0.03, 0.855, f"95% CI [{ci_lo:+.3f}, {ci_hi:+.3f}]",
-            transform=ax.transAxes, ha="left", va="top",
-            color=t["secondary"], fontsize=10)
-    ax.text(0.03, 0.775, "indistinguishable from zero",
-            transform=ax.transAxes, ha="left", va="top",
-            color=t["muted"], fontsize=9.5)
+    # The headline sits in the panel header, not inside the axes: the curve runs
+    # the full width and depth here, so any in-plot block would sit on the data.
+    ax.text(0, 1.13, "Cumulative $\\Delta\\Delta$G", transform=ax.transAxes,
+            va="bottom", ha="left", color=t["ink"], fontsize=13,
+            fontweight="semibold")
+    ax.text(0, 1.06,
+            f"$\\Delta\\Delta$G = {ddg:+.3f} kcal/mol   (95% CI "
+            f"{ci_lo:+.3f} … {ci_hi:+.3f})",
+            transform=ax.transAxes, va="bottom", ha="left",
+            color=t["secondary"], fontsize=9)
+    ax.set_ylim(-2.5, 0.32)
     ax.set_xlim(-0.02, 1.05)
     ax.set_xlabel("$\\lambda$ (window midpoint)", color=t["secondary"], fontsize=10)
-    ax.set_title("Cumulative $\\Delta\\Delta$G", color=t["ink"],
-                 fontsize=13, fontweight="semibold", loc="left", pad=10)
     style_axes(ax, t, "$\\Sigma\\,\\Delta\\Delta$G  (kcal/mol)")
 
 
 def render(theme: str, out: Path, lam, per, total, ci_lo, ci_hi) -> None:
     t = THEMES[theme]
-    fig = plt.figure(figsize=(15, 5.9), dpi=200, facecolor=t["surface"])
-    gs = GridSpec(1, 2, width_ratios=[1.45, 1.0], wspace=0.20,
-                  left=0.055, right=0.975, top=0.755, bottom=0.115)
+    fig = plt.figure(figsize=(10, 4.8), dpi=200, facecolor=t["surface"])
+    # left margin is generous on purpose: the rotated y-axis label is the first
+    # thing to get clipped when the figure is only 10in wide.
+    gs = GridSpec(1, 2, width_ratios=[1.45, 1.0], wspace=0.22,
+                  left=0.085, right=0.975, top=0.72, bottom=0.105)
 
-    fig.text(0.055, 0.935,
+    # Header text starts further left than the panels do: it is the longest
+    # string in the figure and the thing that overflows first. Provenance is
+    # left to the README caption rather than repeated here.
+    fig.text(0.03, 0.95,
              "6I5I CLK1 · dual-topology RBFE — N–CH$_3$  →  N–H (desmethyl)",
              color=t["ink"], fontsize=17, fontweight="semibold")
-    fig.text(0.055, 0.875,
+    fig.text(0.03, 0.885,
              "H3E “12H” vs its desmethyl analogue · 15 $\\lambda$ windows × 500 ps "
-             "per direction, forward + backward · Bennett acceptance ratio",
+             "per direction · forward + backward · BAR",
              color=t["secondary"], fontsize=10.5)
-    fig.text(0.055, 0.833,
-             "plotted directly from this repository's run output "
-             "(6I5I_DUAL_FEP/*/md_*.fepout)",
-             color=t["muted"], fontsize=9.5)
 
     panel_profiles(fig.add_subplot(gs[0, 0]), t, lam, per)
     panel_cumulative(fig.add_subplot(gs[0, 1]), t, lam, per, total, ci_lo, ci_hi)
