@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""Entry point for the `rbfe-prep` command.
+
+`rbfe` works inside a system directory that already has inputs. This is how
+those inputs get made from a PDB entry. See RUNBOOK.md section 2.
+"""
+
+import sys
+from pathlib import Path
+
+# The repo root, so `import rbfe` works without an install.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from rbfe.prep import main  # noqa: E402
+
+if __name__ == "__main__":
+    raise SystemExit(main())

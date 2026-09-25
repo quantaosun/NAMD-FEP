@@ -1,0 +1,41 @@
+[
+  {
+    "case": "*",
+    "artifact": "fep.tcl",
+    "kind": "header",
+    "why": "rbfe generates fep.tcl from [run] lambdas and stamps it with the source config and a schedule hash, so it can refuse to run against a stale copy. The schedule itself and the runFEP proc are byte-identical; two comment lines are added."
+  },
+  {
+    "case": "*",
+    "artifact": "*.namd",
+    "kind": "param-path",
+    "why": "a parameters line whose path is derived from {root} is emitted absolute, so the config works at any directory depth. The frozen 4YLJ configs happened to use absolute paths already and match exactly; a legacy config that used relative paths is reproduced verbatim (see verify/cases/6i5i-legacy.ini). Compared by basename, and every other byte must match."
+  },
+  {
+    "case": "4ylj",
+    "artifact": "hybrid/hybrid.pdb",
+    "kind": "element-column",
+    "line": 31,
+    "from": "B",
+    "to": "Br",
+    "why": "element() derived the element from the first letter of the GAFF type, so `br` became boron. Fixed to derive it from the MASS. This is a correction, not drift: the wrong element propagated into complex.pdb and ionized.pdb (verified: `BR1 ... LIG  B`), because psfgen passes the column through. Iodine was unaffected only because `i` -> I is one letter."
+  },
+  {
+    "case": "*",
+    "artifact": "leg/ionized.pdb, leg/box.json",
+    "kind": "not-reproducible",
+    "why": "VMD's solvate is non-deterministic: two builds from IDENTICAL inputs placed water differently (30080 of 72634 atoms shared). Measured 2026-09-20. The cell, the psf topology and every protein+ligand coordinate DO reproduce exactly -- that is what tier 2 asserts; the water network cannot be reproduced by anyone, including by VMD against itself."
+  },
+  {
+    "case": "6i5i",
+    "artifact": "hybrid/hybrid.rtf",
+    "kind": "charge-closure",
+    "why": "The frozen 6I5I hybrid.rtf predates 6I5I's own charge-closure fix. Its appearing atom carries the mutant's native charge (+0.174786) rather than the closed value (+0.158610), so its lambda=1 state sums to +0.016176 e -- a state that is supposed to be the neutral desmethyl ligand. The source comment in 6I5I_DUAL_FEP/prepare_hybrid.py describes exactly this (+0.0162 e) as the bug it fixes; the file on disk is older than the fix. rbfe produces the closed value. Every other byte matches, and all four term SETS are identical -- the remainder of the diff is the orientation of newly added terms (`BOND H17 N4` vs `BOND N4 H17`), which is physically identical."
+  },
+  {
+    "case": "6i5i",
+    "artifact": "hybrid/hybrid.prm",
+    "kind": "mirror-ambiguity",
+    "why": "Three accepted differences. (1) The title line: 6I5I wrote a shorter literal to the .prm than to the .rtf. (2) The cross-term value: the hybrid angle C12-N4-H17 has no counterpart in either endpoint, and the mutant offers two equally valid analogues, `cc na hn` (46.80/125.500) and `nc na hn` (65.50/120.180). rbfe takes the first in file order and REPORTS the candidate count; the frozen build picked the other. This is a genuine 2-fold ambiguity in the chemistry, not a defect -- `missing_terms = fail` refuses it instead. (3) NONBONDED entry order: the frozen file appends `hn` last, rbfe sorts it in place. Entry order in a .prm has no effect."
+  }
+]

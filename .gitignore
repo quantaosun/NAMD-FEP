@@ -37,3 +37,25 @@ complex.pdb
 
 # Internal working notes (not part of the published workflow)
 CLAUDE.md
+# Claude Code skills: same category -- guidance for an assistant driving this
+# repo, not part of the CLI workflow. RUNBOOK.md is the human-facing copy.
+.claude/skills/
+
+# Per-system inputs and run output. `systems/*/system.ini` IS published -- it is
+# the whole configuration of a system, and the only per-system file `rbfe`
+# reads. Everything beside it is regenerable: inputs come from `rbfe-prep`,
+# hybrid/ from `rbfe hybrid`, complex/ and solvent/ from `rbfe build`+`rbfe
+# inputs`, and the rest is simulation output.
+systems/*/inputs/
+systems/*/hybrid/
+systems/*/complex/
+systems/*/solvent/
+systems/*/fep.tcl
+
+# 4YLJ -- the second worked system, deliberately not published. Its builder
+# diverged from the 6I5I workflow by 632 lines and `rbfe/` is the generalized
+# replacement for both; neither README nor the Chinese guide mentions it.
+4YLJ/
+
+# `rbfe verify` scratch
+/tmp-verify*/
