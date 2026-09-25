@@ -137,7 +137,23 @@ NAMD-FEP/
 ├── README.md                  ← you are here — the general workflow
 ├── NAMD_RBFE_Guide_zh.md      Chinese companion guide
 ├── LICENSE                    MIT
+├── RUNBOOK.md                 the operational reference for the `rbfe` path
 ├── toppar/                    CHARMM36 parameters (only the 7 files actually read)
+├── bin/
+│   ├── rbfe                   the one command surface, the same for every system
+│   └── rbfe-prep              step ① — build a system's inputs from a PDB
+├── rbfe/                      the general engine (one system = one system.ini)
+│   ├── config.py              INI schema — an unknown key is fatal
+│   ├── charmm.py topology.py params.py     rtf/prm/pdb parsing + lookup
+│   ├── hybrid.py              dual-topology hybrid + charge closure
+│   ├── mutations/             element_swap, atom_addition, mcs
+│   ├── similarity.py          ECFP4 gate — is this pair suitable for RBFE?
+│   ├── build.py inputs.py run.py analysis.py estimators.py
+│   └── prep.py                what `rbfe-prep` drives
+├── systems/                   one directory per system (system.ini each)
+│   ├── 6i5i/  4ylj/           the two frozen systems
+│   └── 3htb/                  worked example for step ① — see §1
+├── verify/                    reproduces the frozen systems, byte for byte
 ├── docs/
 │   ├── plot_banner.py         renders the banner above from the run output
 │   ├── plot_diagnostics.py    renders the two convergence figures above
@@ -226,6 +242,14 @@ Five steps. Steps ②–④ are **the same three commands for any system**; what
 changes between projects is the content of `inputs/`, the mapping logic in
 `prepare_hybrid.py`, and the binary paths.
 
+> **The `rbfe` CLI runs this whole sequence.** `rbfe hybrid` → `rbfe build` →
+> `rbfe inputs` → `rbfe run` → `rbfe audit` replaces the per-system scripts
+> quoted below, which are the original 6I5I implementation and are kept because
+> the published result was produced with them. One system is one `system.ini`,
+> and `rbfe-prep` (step ①) makes the inputs. **`RUNBOOK.md` is the reference for
+> the `rbfe` path**; the steps here describe the scripts it grew out of.
+
+
 ```
  inputs/                 hybrid/            complex/  solvent/         results
  protein.pdb  ─┐
@@ -247,7 +271,37 @@ You need:
 Ligand hydrogens *are* required; all-atom input is a contract term of this
 workflow.
 
-Getting ligand parameters (either works — both yield CHARMM `.rtf`/`.prm`):
+`rbfe-prep` produces all of it from a PDB entry:
+
+```bash
+rbfe-prep fetch   3HTB                       # or bring your own PDB
+rbfe-prep report  3HTB.pdb                   # read this before choosing anything
+rbfe-prep strip   3HTB.pdb -o inputs/protein.pdb --chain A
+rbfe-prep ligand  3HTB.pdb JZ4 -o inputs/mut.sdf
+rbfe-prep ligand  3HTB.pdb JZ4 -o inputs/ref.sdf --drop C4
+rbfe-prep params  inputs/ref.sdf --name ref -o inputs/
+rbfe-prep params  inputs/mut.sdf --name mut -o inputs/
+rbfe-prep scaffold systems/3htb --chain A --resname UNL
+```
+
+`report` is read-only and answers the questions that decide everything else:
+which chains exist, what HETATM species are present, whether the protein has
+numbering gaps, how many altlocs, and whether any modified residue (MSE, SEP,
+TPO) will not build. `--drop` deletes atoms *before* hydrogens are added, which
+is how you derive the smaller ligand from the crystal one while keeping the
+crystallographic pose of the shared atoms.
+
+**The tool does the file handling, not the chemistry.** `scaffold` leaves
+`[mutation] strategy` blank on purpose, so `rbfe` refuses to guess. And what
+`ligand` and `params` print — the formula, the SMILES, the total charge — is
+*perceived* by obabel, not known:
+
+- Is the SMILES the molecule you meant? If not, `--smiles` overrides it and the
+  crystal frame is kept.
+- Is `RESI total charge` within ~0.02 of an integer? If not, `rbfe hybrid` will
+  refuse the ligand, because that means a truncated or hand-edited `.rtf`.
+
+Getting parameters by hand instead (either works — both yield `.rtf`/`.prm`):
 
 ```bash
 # Option A — acpype (bundled AmberTools, runs offline)
@@ -259,6 +313,28 @@ acpype -i ref.mol2 -c bcc -n 0 -b ref
 
 > ⚠️ acpype writes **`IMPH`**, not `IMPR`, for impropers. If you hand-edit the
 > `.rtf`, keep that spelling or psfgen will not apply the improper.
+
+> ⚠️ **acpype from a bare `.pdb` silently adds no hydrogens.** It accepts `.pdb`
+> input and produces a heavy-atom-only parameterisation, so AM1-BCC is computed
+> on a dehydrogenated species. Always go via the `.sdf` that `rbfe-prep ligand`
+> writes.
+
+**Worked example — `systems/3htb/`.** T4 lysozyme L99A/M102Q from PDB 3HTB,
+2-ethylphenol → 2-propylphenol, built end to end with exactly the commands
+above. The reference is the crystal ligand JZ4 (2-propylphenol) with its
+terminal methyl deleted; in the crystal that atom is named `C4`, which is where
+`--drop C4` comes from. Two decisions are recorded in its `system.ini` header
+and are worth reading before you make your own:
+
+- **The reference was derived by `--drop`, not built independently.** That
+  guarantees both ligands keep the crystallographic pose of their shared atoms.
+  A `--drop` result is 2-ethylphenol; the mutant is 2-propylphenol (C₉H₁₂O vs
+  C₈H₁₀O, ECFP4 0.652 against the 0.60 threshold).
+- **It uses `mcs`, deliberately not `element_swap`.** acpype numbers atoms
+  sequentially in input order, so `ref.C1` is a ring carbon while `mut.C1` is
+  the terminal propyl carbon — the two ligands share 19 names that do **not**
+  correspond chemically. `element_swap` matches by name and cannot detect that;
+  `mcs` derives the correspondence from structure.
 
 ### Step ② — build the hybrid ligand
 
