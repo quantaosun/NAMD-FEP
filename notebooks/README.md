@@ -9,9 +9,9 @@ equilibration/convergence diagnostics behind the final number.
 
 ## Launch on Binder
 
-Point mybinder.org at this repository; the build config lives in `binder/`
-(repo2docker only discovers the repo root, `binder/`, or `.binder/`), and
-`filepath=` opens notebook 00 directly:
+Point mybinder.org at this repository; the build config is the
+`environment.yml` at the repository root, and `filepath=` opens notebook 00
+directly:
 
 ```
 https://mybinder.org/v2/gh/quantaosun/NAMD-FEP/<branch>?filepath=notebooks/00_binder_setup.ipynb

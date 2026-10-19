@@ -1,8 +1,8 @@
 # Local-conda copy of the NAMD-FEP notebook environment.
 #
-# binder/environment.yml is the file mybinder.org (repo2docker) actually
-# reads -- it only discovers config in the repo root, binder/, or .binder/.
-# This copy exists for building a local conda env by hand:
+# The environment.yml at the repository root is the one mybinder.org
+# (repo2docker) reads. This copy exists for building a local conda env by
+# hand:
 #
 #     conda env create -f notebooks/environment.yml
 #

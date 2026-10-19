@@ -1,0 +1,15 @@
+name: namd-fep
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.10
+  - numpy
+  - matplotlib
+  - rdkit
+  - openbabel
+  - jupyterlab
+  - ipywidgets
+  - pip
+  - pip:
+      - nglview
+      - acpype
