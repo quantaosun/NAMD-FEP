@@ -9,16 +9,17 @@ equilibration/convergence diagnostics behind the final number.
 
 ## Launch on Binder
 
-Point mybinder.org at this repository with `notebooks/environment.yml` as the
-build config, opening notebook 00:
+Point mybinder.org at this repository; the build config lives in `binder/`
+(repo2docker only discovers the repo root, `binder/`, or `.binder/`), and
+`filepath=` opens notebook 00 directly:
 
 ```
 https://mybinder.org/v2/gh/quantaosun/NAMD-FEP/<branch>?filepath=notebooks/00_binder_setup.ipynb
 ```
 
-For the labodock_binder image, copy (or subtree) `notebooks/environment.yml`
-into that image's repo2docker config (`binder/` or repo root). Notebook 00
-also self-heals: it pip-installs anything the image lacks.
+For a local conda env instead, `conda env create -f notebooks/environment.yml`
+(an identical copy). Notebook 00 also self-heals: it pip-installs anything the
+image lacks.
 
 > Free Binder sessions have **no GPU and ~2 GB RAM**. Everything except the
 > NAMD production run works there — preparation, visualisation, sanity checks,

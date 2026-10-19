@@ -1,12 +1,12 @@
-# Binder (repo2docker) environment for the NAMD-FEP notebooks.
+# Local-conda copy of the NAMD-FEP notebook environment.
 #
-# repo2docker discovers configuration files in the first of: the repository
-# root, a `binder/` directory, or a `.binder/` directory. This `notebooks/`
-# copy is the source of truth; the labodock_binder image (or a `binder/`
-# shim in a fork) should include it so the notebooks run as published.
+# binder/environment.yml is the file mybinder.org (repo2docker) actually
+# reads -- it only discovers config in the repo root, binder/, or .binder/.
+# This copy exists for building a local conda env by hand:
 #
-# The heavy scientific packages come from conda-forge (binary wheels, no
-# compilation inside the image); the two pip-only packages follow under `pip:`.
+#     conda env create -f notebooks/environment.yml
+#
+# Keep the two in sync.
 name: namd-fep
 channels:
   - conda-forge
