@@ -1,0 +1,24 @@
+# Binder (repo2docker) environment for the NAMD-FEP notebooks.
+#
+# repo2docker discovers configuration files in the first of: the repository
+# root, a `binder/` directory, or a `.binder/` directory. This `notebooks/`
+# copy is the source of truth; the labodock_binder image (or a `binder/`
+# shim in a fork) should include it so the notebooks run as published.
+#
+# The heavy scientific packages come from conda-forge (binary wheels, no
+# compilation inside the image); the two pip-only packages follow under `pip:`.
+name: namd-fep
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.10
+  - numpy
+  - matplotlib
+  - rdkit
+  - openbabel          # the obabel CLI that `rbfe-prep ligand` shells out to
+  - jupyterlab
+  - ipywidgets
+  - pip
+  - pip:
+      - nglview        # interactive 3D viewer (not on conda-forge for all py)
+      - acpype         # ligand parameterisation (AM1-BCC), pip-only

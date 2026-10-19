@@ -154,6 +154,16 @@ NAMD-FEP/
 │   ├── 6i5i/  4ylj/           the two frozen systems
 │   └── 3htb/                  worked example for step ① — see §1
 ├── verify/                    reproduces the frozen systems, byte for byte
+├── notebooks/                 optional Jupyter front end (Binder-ready) —
+│   │                          the same rbfe commands, step by step, with every
+│   │                          intermediate visualised. See notebooks/README.md
+│   ├── 00_binder_setup.ipynb  environment check + installs
+│   ├── 01_complex_visualisation.ipynb   the starting complex, inventoried, in 3D
+│   ├── 02_prepare_and_sanitise.ipynb    rbfe-prep, interactively
+│   ├── 03_hybrid_and_system.ipynb       hybrid/build/inputs/check, visualised
+│   ├── 04_run_monitor.ipynb             launch (GPU) + watch the production run
+│   ├── 05_equilibration_and_analysis.ipynb  the audit as figures
+│   └── environment.yml        repo2docker config (conda + pip)
 ├── docs/
 │   ├── plot_banner.py         renders the banner above from the run output
 │   ├── plot_diagnostics.py    renders the two convergence figures above
