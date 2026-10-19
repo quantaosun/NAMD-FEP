@@ -1,0 +1,24 @@
+# Local-conda copy of the NAMD-FEP notebook environment.
+#
+# The environment.yml at the repository root is the one mybinder.org
+# (repo2docker) reads. This copy exists for building a local conda env by
+# hand:
+#
+#     conda env create -f notebooks/environment.yml
+#
+# Keep the two in sync.
+name: namd-fep
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.10
+  - numpy
+  - matplotlib
+  - rdkit
+  - openbabel          # the obabel CLI that `rbfe-prep ligand` shells out to
+  - jupyterlab
+  - ipywidgets
+  - pip
+  - pip:
+      - nglview        # interactive 3D viewer (not on conda-forge for all py)
+      - acpype         # ligand parameterisation (AM1-BCC), pip-only
