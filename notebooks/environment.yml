@@ -20,8 +20,11 @@ dependencies:
   - ipywidgets
   - pip
   - pip:
-      - nglview==4.0.1  # interactive 3D viewer (pip-only on conda-forge); pin keeps
-                        # the widget backend/frontend protocol versions in sync
-                        # (unpinned installs mix "4.0" backend with "3.1.5" frontend
-                        # and the 3D views in 01/02/03 fail to render)
+      - nglview==3.1.4  # interactive 3D viewer. Pin: 3.1.4 is the last release whose
+                        # backend (`_model_module_version`) and prebuilt labextension
+                        # versions match exactly (both 3.1.4). 4.0/4.0.1 declare "4.0"
+                        # but ship a "3.1.5" bundle, so every 3D view fails on
+                        # JupyterLab with "version 4.0 is not registered".
+      - "setuptools<81" # nglview 3.1.4 does `import pkg_resources`, removed from
+                        # setuptools >= 81 (Python >= 3.12 images)
       - acpype         # ligand parameterisation (AM1-BCC), pip-only
