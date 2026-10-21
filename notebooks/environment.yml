@@ -20,5 +20,8 @@ dependencies:
   - ipywidgets
   - pip
   - pip:
-      - nglview        # interactive 3D viewer (not on conda-forge for all py)
+      - nglview==4.0.1  # interactive 3D viewer (pip-only on conda-forge); pin keeps
+                        # the widget backend/frontend protocol versions in sync
+                        # (unpinned installs mix "4.0" backend with "3.1.5" frontend
+                        # and the 3D views in 01/02/03 fail to render)
       - acpype         # ligand parameterisation (AM1-BCC), pip-only
